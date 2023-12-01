@@ -62,4 +62,11 @@ benchmark {
     targets {
         register("jvmTest")
     }
+    configurations {
+        getByName("main") {
+            warmups = 1
+            iterationTime = 1
+            outputTimeUnit = "SECONDS"
+        }
+    }
 }
