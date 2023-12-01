@@ -1,14 +1,10 @@
-name: Haskell CI
+name: Haskell benchmarks
 
 on:
-  push:
-    branches: [ main ]
-    paths: [ hs/** ]
-  pull_request:
-    branches: [ main ]
-    paths: [ hs/** ]
-
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   get-inputs:
@@ -17,10 +13,19 @@ jobs:
       SESSION: ${{ secrets.SESSION }}
 
   build:
+    needs: [ get-inputs ]
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: gh-docs
+          path: gh-docs
+      - uses: actions/download-artifact@v3
+        with:
+          name: inputs
+          path: inputs
       - uses: haskell-actions/setup@v2
         id: setup
         with:
@@ -45,25 +50,12 @@ jobs:
         with:
           path: ${{ steps.setup.outputs.cabal-store }}
           key: ${{ steps.cache.outputs.cache-primary-key }}
-      - id: build
-        run: |
-          cabal build all
-          echo "exe=$(cabal list-bin aoc2023)" >> $GITHUB_OUTPUT
-        working-directory: hs
-      - run: cabal test all --test-show-details=direct
-        working-directory: hs
-      - uses: actions/upload-artifact@v3
-        with:
-          name: aoc2023-hs
-          path: ${{ steps.build.outputs.exe }}
-
-  run:
-    needs: [ get-inputs, build ]
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/download-artifact@v3
-      - run: chmod +x aoc2023-hs/aoc2023
-      - run: aoc2023-hs/aoc2023
+      - run: cabal bench bench:aoc2023-bench --benchmark-options='-o ${{ github.workspace }}/gh-docs/aoc2023-bench.html'
         env:
-          AOC2023_DATADIR: inputs
+          AOC2023_DATADIR: ${{ github.workspace }}/inputs
+        working-directory: hs
+      - uses: EndBug/add-and-commit@v9
+        with:
+          cwd: gh-docs
+          add: aoc2023-bench.html
+          message: 'Haskell Criterion ${{ github.sha }}'

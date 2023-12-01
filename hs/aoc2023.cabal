@@ -69,3 +69,18 @@ test-suite aoc2023-test
     build-tool-depends:
         hspec-discover:hspec-discover ^>=2.11.7
     ghc-options:      -threaded -rtsopts "-with-rtsopts=-N"
+
+benchmark aoc2023-bench
+    default-language: GHC2021
+    type:             exitcode-stdio-1.0
+
+    -- Directories containing source files.
+    hs-source-dirs:   bench
+    main-is:          Main.hs
+    build-depends:
+        aoc2023,
+        base ^>=4.17.2.0,
+        criterion ^>= 1.6.3.0,
+        filepath ^>=1.4.2.2,
+        text ^>=2.0.1
+    ghc-options:      -threaded -rtsopts "-with-rtsopts=-N"
