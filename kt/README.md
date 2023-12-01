@@ -1,5 +1,5 @@
 # [Advent of Code 2023](https://adventofcode.com/2023)
-### my answers in [Kotlin](https://www.kotlinlang.org/)
+### my answers in [Kotlin](https://www.kotlinlang.org/) ![Kotlin CI](https://github.com/ephemient/aoc2023/workflows/Kotlin%20CI/badge.svg)
 
 This project builds with [Gradle](https://gradle.org/).
 
