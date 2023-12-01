@@ -1,0 +1,34 @@
+# [Advent of Code 2023](https://adventofcode.com/2023)
+### my answers in [Kotlin](https://www.kotlinlang.org/)
+
+This project builds with [Gradle](https://gradle.org/).
+
+Run the test suite:
+
+```sh
+./gradlew :aoc2023-lib:allTests
+```
+
+Run [kotlinx.benchmark](https://github.com/Kotlin/kotlinx-benchmark) ([JMH](https://openjdk.java.net/projects/code-tools/jmh/)) benchmarks:
+
+```sh
+./gradlew :aoc2023-exe:benchmark
+```
+
+Print solutions for the inputs provided in local data files:
+
+```sh
+./gradlew :aoc2023-exe:jvmRun :aoc2023-exe:run{Debug,Release}Executable{LinuxX64,Macos{X64,Arm64},MingwX64}
+```
+
+Run all checks, including [Detekt](https://detekt.github.io/) static code analysis and [ktlint](https://ktlint.github.io/) formatter:
+
+```sh
+./gradlew check
+```
+
+Check for newer versions of dependencies:
+
+```sh
+./gradlew :dependencyUpdates
+```

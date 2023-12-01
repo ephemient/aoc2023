@@ -1,0 +1,30 @@
+[versions]
+dependency-updates = "0.50.0"
+detekt = "1.23.4"
+graal-sdk = "23.1.1"
+junit-jupiter = "5.10.1"
+kotlin = "1.9.21"
+kotlinx-benchmark = "0.4.9"
+kotlinx-coroutines = "1.7.3"
+okio = "3.6.0"
+native-image-plugin = "0.9.28"
+
+[plugins]
+dependency-updates = { id = "com.github.ben-manes.versions", version.ref = "dependency-updates" }
+kotlin-plugin-allopen = { id = "org.jetbrains.kotlin.plugin.allopen", version.ref = "kotlin" }
+kotlinx-benchmark = { id = "org.jetbrains.kotlinx.benchmark", version.ref = "kotlinx-benchmark" }
+native-image = { id = "org.graalvm.buildtools.native", version.ref = "native-image-plugin" }
+
+[libraries]
+detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
+detekt-plugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
+graal-sdk = { module = "org.graalvm.sdk:graal-sdk", version.ref = "graal-sdk" }
+junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit-jupiter" }
+junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit-jupiter" }
+kotlinx-benchmark = { module = "org.jetbrains.kotlinx:kotlinx-benchmark-runtime", version.ref = "kotlinx-benchmark" }
+kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
+okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
+
+[bundles]
+detekt-plugins = ["detekt-formatting"]
