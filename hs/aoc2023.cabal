@@ -1,0 +1,71 @@
+cabal-version:      2.4
+name:               aoc2023
+version:            0.1.0.0
+synopsis:           Advent of Code 2023 - my solutions in Haskell
+
+-- A longer description of the package.
+description:        Please see the README on GitHub at <https://github.com/ephemient/aoc2023/blob/main/hs/README.md>
+homepage:           https://github.com/ephemient/aoc2023/tree/main/hs
+
+-- A URL where users can report bugs.
+bug-reports:        https://github.com/ephemient/aoc2023/issues
+license:            BSD-3-Clause
+license-file:       LICENSE
+author:             Daniel Lin
+maintainer:         ephemient@gmail.com
+
+-- A copyright notice.
+copyright:          (c) 2023 Daniel Lin
+-- category:
+extra-source-files: README.md
+
+library
+    exposed-modules:
+        Day1
+
+    -- Modules included in this library but not exported.
+    -- other-modules:
+
+    -- LANGUAGE extensions used by modules in this package.
+    -- other-extensions:
+    build-depends:
+        base ^>=4.17.2.0,
+        text ^>=2.0.1
+    hs-source-dirs:   src
+    default-language: GHC2021
+
+executable aoc2023
+    main-is:          Main.hs
+
+    -- Modules included in this executable, other than Main.
+    -- other-modules:
+
+    -- LANGUAGE extensions used by modules in this package.
+    -- other-extensions:
+    build-depends:
+        aoc2023,
+        base ^>=4.17.2.0,
+        filepath ^>=1.4.2.2,
+        text ^>=2.0.1
+    ghc-options:      -threaded -rtsopts "-with-rtsopts=-N"
+
+    hs-source-dirs:   app
+    default-language: GHC2021
+
+test-suite aoc2023-test
+    default-language: GHC2021
+    type:             exitcode-stdio-1.0
+
+    -- Directories containing source files.
+    hs-source-dirs:   test
+    main-is:          Main.hs
+    other-modules:
+        Day1Spec
+    build-depends:
+        aoc2023,
+        base ^>=4.17.2.0,
+        hspec ^>= 2.11.7,
+        text ^>=2.0.1
+    build-tool-depends:
+        hspec-discover:hspec-discover ^>=2.11.7
+    ghc-options:      -threaded -rtsopts "-with-rtsopts=-N"
