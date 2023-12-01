@@ -1,0 +1,69 @@
+name: Haskell CI
+
+on:
+  push:
+    branches: [ main ]
+    paths: [ hs/** ]
+  pull_request:
+    branches: [ main ]
+    paths: [ hs/** ]
+
+  workflow_dispatch:
+
+jobs:
+  get-inputs:
+    uses: ephemient/aoc2023/.github/workflows/get-inputs.yml@main
+    secrets:
+      SESSION: ${{ secrets.SESSION }}
+
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: haskell-actions/setup@v2
+        id: setup
+        with:
+          ghc-version: 9.4.7
+      - run: |
+          cabal configure --enable-tests
+          cabal build all --dry-run
+        working-directory: hs
+      - uses: actions/cache/restore@v3
+        id: cache
+        env:
+          key: ${{ runner.os }}-ghc-${{ steps.setup.outputs.ghc-version }}-cabal-${{ steps.setup.outputs.cabal-version }}
+        with:
+          path: ${{ steps.setup.outputs.cabal-store }}
+          key: ${{ env.key }}-plan-${{ hashFiles('hs/dist-newstyle/cache/plan.json') }}
+          restore-keys: ${{ env.key }}-
+      - run: cabal build all --only-dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        working-directory: hs
+      - uses: actions/cache/save@v3
+        if: steps.cache.outputs.cache-hit != 'true'
+        with:
+          path: ${{ steps.setup.outputs.cabal-store }}
+          key: ${{ steps.cache.outputs.cache-primary-key }}
+      - id: build
+        run: |
+          cabal build all
+          echo "exe=$(cabal list-bin aoc2023)" >> $GITHUB_OUTPUT
+        working-directory: hs
+      - run: cabal test all --test-show-details=direct
+        working-directory: hs
+      - uses: actions/upload-artifact@v3
+        with:
+          name: aoc2023-hs
+          path: ${{ steps.build.outputs.exe }}
+
+  run:
+    needs: [ get-inputs, build ]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/download-artifact@v3
+      - run: chmod +x aoc2023-hs/aoc2023
+      - run: aoc2023-hs/aoc2023
+        env:
+          AOC2023_DATADIR: inputs

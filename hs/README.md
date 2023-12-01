@@ -1,5 +1,5 @@
 # [Advent of Code 2023](https://adventofcode.com/2023)
-### my answers in [Haskell](https://www.haskell.org/)
+### my answers in [Haskell](https://www.haskell.org/) ![Haskell CI](https://github.com/ephemient/aoc2023/workflows/Haskell%20CI/badge.svg)
 
 This project builds with [The Haskell Cabal](https://www.haskell.org/cabal/).
 
