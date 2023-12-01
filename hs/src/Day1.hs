@@ -1,11 +1,11 @@
 {-|
 Module:         Day1
-Description:    <https://adventofcode.com/2023/day/1 Day 1: Trebuchet?! >
+Description:    <https://adventofcode.com/2023/day/1 Day 1: Trebuchet?!>
 -}
 {-# LANGUAGE OverloadedStrings #-}
 module Day1 (part1, part2) where
 
-import Data.Maybe (fromMaybe, listToMaybe)
+import Data.Maybe (listToMaybe, mapMaybe)
 import Data.Text (Text)
 import qualified Data.Text as T (inits, isPrefixOf, isSuffixOf, lines, pack, tails)
 
@@ -14,10 +14,10 @@ part1 = solve digits
 part2 = solve extendedDigits
 
 solve :: [(Int, Text)] -> Text -> Int
-solve values = sum . map solve' . T.lines where
-    solve' line = fromMaybe 0 . listToMaybe $ do
-        x <- [i | s <- T.tails line, (i, t) <- values, t `T.isPrefixOf` s]
-        y <- [j | s <- reverse $ T.inits line, (j, t) <- values, t `T.isSuffixOf` s]
+solve values = sum . mapMaybe solve' . T.lines where
+    solve' line = do
+        x <- listToMaybe [i | s <- T.tails line, (i, t) <- values, t `T.isPrefixOf` s]
+        y <- listToMaybe [j | s <- reverse $ T.inits line, (j, t) <- values, t `T.isSuffixOf` s]
         pure $ 10 * x + y
 
 digits, extendedDigits :: [(Int, Text)]
