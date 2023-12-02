@@ -1,0 +1,31 @@
+[package]
+name = "aoc2023"
+description = "Advent of Code 2023 - my answers"
+version = "0.1.0"
+authors = ["Daniel Lin <ephemient@gmail.com>"]
+license = "BSD-3-Clause"
+edition = "2021"
+readme = "README.md"
+homepage = "https://github.com/ephemient/aoc2023/tree/main/rs"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+name = "aoc2023"
+path = "src/lib.rs"
+
+[[bin]]
+name = "aoc2023"
+path = "src/main.rs"
+
+[dependencies]
+
+[dev-dependencies]
+indoc = "2"
+pretty_assertions = "1.4.0"
+
+[profile.dev]
+opt-level = 1
+
+[profile.test]
+opt-level = 3

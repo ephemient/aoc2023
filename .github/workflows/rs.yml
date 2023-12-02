@@ -1,0 +1,52 @@
+name: Rust CI
+
+on:
+  push:
+    branches: [ main ]
+    paths: [ rs/** ]
+  pull_request:
+    branches: [ main ]
+    paths: [ rs/** ]
+
+  workflow_dispatch:
+
+jobs:
+  get-inputs:
+    uses: ephemient/aoc2023/.github/workflows/get-inputs.yml@main
+    secrets:
+      SESSION: ${{ secrets.SESSION }}
+
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          rustup toolchain install --profile minimal --component clippy,rustfmt stable
+          rustup default stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: rs -> target
+      - run: cargo fmt -- --check
+        working-directory: rs
+      - run: cargo clippy -- --deny warnings
+        working-directory: rs
+      - run: cargo test
+        working-directory: rs
+      - run: cargo build --all-features --all-targets --release
+        working-directory: rs
+      - uses: actions/upload-artifact@v3
+        with:
+          name: aoc2023-rs
+          path: rs/target/release/aoc2023
+
+  run:
+    needs: [ get-inputs, build ]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/download-artifact@v3
+      - run: chmod +x aoc2023-rs/aoc2023
+      - run: aoc2023-rs/aoc2023
+        env:
+          AOC2023_DATADIR: inputs
