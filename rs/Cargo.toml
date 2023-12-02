@@ -21,8 +21,13 @@ path = "src/main.rs"
 [dependencies]
 
 [dev-dependencies]
+criterion = "0.5.0"
 indoc = "2"
 pretty_assertions = "1.4.0"
+
+[[bench]]
+name = "criterion"
+harness = false
 
 [profile.dev]
 opt-level = 1
