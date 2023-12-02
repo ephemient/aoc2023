@@ -1,0 +1,44 @@
+name: Python benchmarks
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  get-inputs:
+    uses: ephemient/aoc2023/.github/workflows/get-inputs.yml@main
+    secrets:
+      SESSION: ${{ secrets.SESSION }}
+
+  build:
+    needs: [ get-inputs ]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: gh-docs
+          path: gh-docs
+      - uses: actions/download-artifact@v3
+        with:
+          name: inputs
+          path: inputs
+      - uses: snok/install-poetry@v1
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
+          cache: poetry
+      - run: poetry install --no-interaction
+        working-directory: py
+      - run: poetry run pytest --benchmark-enable --benchmark-only --benchmark-histogram=${{ github.workspace }}/gh-docs/benchmark
+        env:
+          AOC2023_DATADIR: ${{ github.workspace }}/inputs
+        working-directory: py
+      - uses: EndBug/add-and-commit@v9
+        with:
+          cwd: gh-docs
+          add: benchmark.svg
+          message: 'pytest-benchmark ${{ github.sha }}'
