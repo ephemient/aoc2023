@@ -35,6 +35,8 @@ jobs:
       - run: cargo install cargo-criterion
         working-directory: rs
       - run: cargo criterion
+        env:
+          AOC2023_DATADIR: ${{ github.workspace }}/inputs
         working-directory: rs
       - run: rsync --archive --delete --verbose --whole-file target/criterion/reports/ ../gh-docs/criterion/
         working-directory: rs
