@@ -50,6 +50,10 @@ jobs:
         with:
           name: aoc2023-js
           path: kt/build/js/packages/aoc2023-aoc2023-exe/kotlin/*
+      - uses: actions/upload-artifact@v3
+        with:
+          name: aoc2023-web
+          path: kt/web/build/dist/js/productionExecutable/*
 
   run-jvm:
     needs: [ get-inputs, build ]

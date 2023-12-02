@@ -26,6 +26,6 @@ gradlePlugin {
 }
 
 dependencies {
-    implementation(kotlin("gradle-plugin", libs.versions.kotlin.asProvider().get()))
+    implementation(kotlin("gradle-plugin", libs.versions.kotlin.get()))
     implementation(libs.detekt.plugin)
 }

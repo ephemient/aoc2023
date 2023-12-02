@@ -14,4 +14,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "aoc2023"
-include("aoc2023-exe", "aoc2023-lib")
+include("aoc2023-exe", "aoc2023-lib", "web")
