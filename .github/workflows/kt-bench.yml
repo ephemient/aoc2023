@@ -33,25 +33,32 @@ jobs:
           path: jmh-visualizer.zip
 
   build:
+    needs: [ get-inputs ]
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v3
+        with:
+          name: inputs
+          path: inputs
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
       - uses: gradle/gradle-build-action@v2
         with:
-          arguments: assembleBenchmarks
+          arguments: benchmark
           build-root-directory: kt
+        env:
+          AOC2023_DATADIR: ${{ github.workspace }}/inputs
       - uses: actions/upload-artifact@v3
         with:
-          name: jvmBench
-          path: kt/aoc2023-exe/build/benchmarks/*/jars/*.jar
+          name: benchmarks
+          path: kt/aoc2023-exe/build/reports/benchmarks
 
-  run:
-    needs: [ get-inputs, jmh-visualizer, build ]
+  docs:
+    needs: [ jmh-visualizer, build ]
     runs-on: ubuntu-latest
 
     steps:
@@ -60,38 +67,18 @@ jobs:
           ref: gh-docs
       - uses: actions/download-artifact@v3
         with:
-          name: inputs
-          path: inputs
-      - uses: actions/download-artifact@v3
-        with:
           name: jmh-visualizer
       - uses: actions/download-artifact@v3
         with:
-          name: jvmBench
+          name: benchmarks
+          path: benchmarks
       - run: rm -rf jmh-visualizer
       - run: unzip -d jmh-visualizer jmh-visualizer.zip
-      - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 17
-      - name: Run JVM benchmarks
-        run: |
-          cat >config <<EOF
-          name:jvmBench
-          reportFile:jvmBench.json
-          traceFormat:text
-          warmups:1
-          iterationTime:1
-          outputTimeUnit:SECONDS
-          EOF
-          java -cp jvmTest/jars/*.jar kotlinx.benchmark.jvm.JvmBenchmarkRunnerKt config
-        env:
-          AOC2023_DATADIR: inputs
       - name: Create provided.js
         run: |
           shopt -s failglob
           names=() jsonargs=()
-          for file in *.json; do
+          for file in benchmarks/main/*/*.json; do
             name=${file##*/}
             name=${name%.*}
             names+=("$name")
