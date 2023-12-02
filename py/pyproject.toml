@@ -1,0 +1,46 @@
+[tool.poetry]
+name = "aoc2023"
+version = "0.1.0"
+description = ""
+authors = ["Daniel Lin <ephemient@gmail.com>"]
+license = "BSD-3-Clause"
+readme = "README.md"
+repository = "https://github.com/ephemient/aoc2022/tree/main/py"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+natsort = "^8.4.0"
+
+[tool.poetry.dev-dependencies]
+black = "^23.11.0"
+isort = "^5.12.0"
+pylint = "^3.0.0"
+pytest = "^7.4.0"
+pytest-benchmark = { version = "^4.0.0", extras = ["histogram"] }
+
+[tool.poetry.scripts]
+aoc2023 = "aoc2023.main:main"
+
+[tool.poetry.plugins."aoc2023.days"]
+day1 = "aoc2023.day1:parts"
+
+[tool.black]
+target_version = ["py312"]
+
+[tool.isort]
+profile = "black"
+
+[tool.pylint.format]
+max-line-length = "88"
+
+[tool.pylint.basic]
+good-names-rgxs = ["[xyz]\\d*"]
+
+[tool.pytest.ini_options]
+addopts = '--doctest-modules --benchmark-disable --benchmark-sort=fullname'
+required_plugins = ['pytest-benchmark']
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

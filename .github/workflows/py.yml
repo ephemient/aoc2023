@@ -1,0 +1,33 @@
+name: Python CI
+
+on:
+  push:
+    branches: [ main ]
+    paths: [ py/** ]
+  pull_request:
+    branches: [ main ]
+    paths: [ py/** ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: snok/install-poetry@v1
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
+          cache: poetry
+      - run: poetry install --no-interaction
+        working-directory: py
+      - run: poetry run pylint aoc2023
+        working-directory: py
+      - run: poetry run black . --check
+        working-directory: py
+      - run: poetry run isort . --check
+        working-directory: py
+      - run: poetry run pytest --benchmark-skip
+        working-directory: py
