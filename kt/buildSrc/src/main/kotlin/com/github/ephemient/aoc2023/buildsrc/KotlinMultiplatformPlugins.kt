@@ -20,7 +20,13 @@ class KotlinMultiplatformJvmPlatformPlugin : Plugin<Project> {
         target.apply<KotlinMultiplatformBasePlugin>()
         target.pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
             val kotlin: KotlinMultiplatformExtension by target.extensions
-            kotlin.jvm()
+            kotlin.jvm {
+                compilations.all {
+                    compilerOptions.configure {
+                        freeCompilerArgs.add("-Xassertions=jvm")
+                    }
+                }
+            }
         }
     }
 }
