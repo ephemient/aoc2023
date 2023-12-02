@@ -1,12 +1,13 @@
 package com.github.ephemient.aoc2023.web
 
-import com.github.ephemient.aoc2023.days
+import js.import.import
+import js.promise.await
 import kotlinx.browser.document
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.async
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.yield
 import kotlinx.dom.appendText
 import kotlinx.dom.clear
 import kotlinx.html.dom.append
@@ -16,29 +17,38 @@ import org.w3c.dom.HTMLPreElement
 import org.w3c.dom.HTMLSelectElement
 import org.w3c.dom.HTMLTextAreaElement
 
-fun main() {
+suspend fun main() {
+    val lib = try {
+        import<dynamic>("./aoc2023-web-wasm-js.mjs").await().default.unsafeCast<Lib>()
+    } catch (e: dynamic) {
+        console.error(e)
+        JsLib
+    }
+
     val daySelect = document.getElementById("day") as HTMLSelectElement
-    val input = document.getElementById("input") as HTMLTextAreaElement
-    val output = document.getElementById("output") as HTMLPreElement
+    val inputField = document.getElementById("input") as HTMLTextAreaElement
+    val outputField = document.getElementById("output") as HTMLPreElement
     val form = document.getElementById("container") as HTMLFormElement
     daySelect.append {
-        for ((i, day) in days.withIndex()) {
+        repeat(lib.getDayCount()) { i ->
             option {
                 value = i.toString()
-                +"Day ${day.name}"
+                +"Day ${lib.getDayName(i)}"
             }
         }
     }
     val job = SupervisorJob()
     form.onsubmit = { event ->
-        val day = days[daySelect.value.toInt()]
+        val day = daySelect.value.toInt()
+        val input = inputField.value
         job.cancelChildren()
-        output.clear()
+        outputField.clear()
         GlobalScope.launch(job) {
-            val parts = day.solver(input.value).map { async { it() } }
-            for (part in parts) {
-                val result = part.await()
-                output.appendText("$result\n")
+            var part = 0
+            while (true) {
+                val result = lib.solveDayPart(day, part++, input) ?: break
+                outputField.appendText("$result\n")
+                yield()
             }
         }
         event.preventDefault()

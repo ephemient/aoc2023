@@ -7,7 +7,7 @@ pluginManagement {
     }
 }
 
-dependencyResolutionManagement {
+gradle.afterProject {
     repositories {
         mavenCentral()
     }

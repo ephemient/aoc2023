@@ -6,10 +6,6 @@ group = "com.github.ephemient.aoc2023.build-logic"
 
 gradlePlugin {
     plugins {
-        create("KotlinMultiplatformDefaultHierarchyPlugin") {
-            id = "com.github.ephemient.aoc2023.kotlin.multiplatform.base"
-            implementationClass = "com.github.ephemient.aoc2023.buildsrc.KotlinMultiplatformBasePlugin"
-        }
         create("KotlinMultiplatformJvmPlatformPlugin") {
             id = "com.github.ephemient.aoc2023.kotlin.multiplatform.jvm.platform"
             implementationClass = "com.github.ephemient.aoc2023.buildsrc.KotlinMultiplatformJvmPlatformPlugin"
@@ -21,6 +17,10 @@ gradlePlugin {
         create("KotlinMultiplatformJsPlatformPlugin") {
             id = "com.github.ephemient.aoc2023.kotlin.multiplatform.js.platform"
             implementationClass = "com.github.ephemient.aoc2023.buildsrc.KotlinMultiplatformJsPlatformPlugin"
+        }
+        create("KotlinMultiplatformWasmPlatformPlugin") {
+            id = "com.github.ephemient.aoc2023.kotlin.multiplatform.wasm.platform"
+            implementationClass = "com.github.ephemient.aoc2023.buildsrc.KotlinMultiplatformWasmPlatformPlugin"
         }
     }
 }
