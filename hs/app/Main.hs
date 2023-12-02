@@ -2,12 +2,14 @@
 module Main (main) where
 
 import qualified Day1 (part1, part2)
+import qualified Day2 (part1, part2)
 
 import Control.Monad (ap, when)
 import Data.Foldable (find)
 import Data.Maybe (fromMaybe)
 import Data.Text (Text)
 import qualified Data.Text.IO as TIO (putStrLn, readFile)
+import Text.Megaparsec (errorBundlePretty)
 import System.Environment (getArgs, lookupEnv)
 import System.FilePath (combine)
 
@@ -31,3 +33,4 @@ run' day name showIO funcs = do
 main :: IO ()
 main = do
     run 1 print [Day1.part1, Day1.part2]
+    run 2 (either (fail . errorBundlePretty) print) [Day2.part1, Day2.part2]

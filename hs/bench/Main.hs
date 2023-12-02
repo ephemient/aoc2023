@@ -6,6 +6,7 @@ import Data.Maybe (fromMaybe)
 import Data.Text (Text)
 import qualified Data.Text.IO as TIO (readFile)
 import qualified Day1 (part1, part2)
+import qualified Day2 (part1, part2)
 import System.Environment (lookupEnv)
 import System.FilePath (combine)
 
@@ -19,5 +20,9 @@ main = defaultMain
   [ env (getDayInput 1) $ \input -> bgroup "Day 1"
       [ bench "part 1" $ nf Day1.part1 input
       , bench "part 2" $ nf Day1.part2 input
+      ]
+  , env (getDayInput 2) $ \input -> bgroup "Day 2"
+      [ bench "part 1" $ nf Day2.part1 input
+      , bench "part 2" $ nf Day2.part2 input
       ]
   ]

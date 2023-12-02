@@ -21,7 +21,8 @@ extra-source-files: README.md
 
 library
     exposed-modules:
-        Day1
+        Day1,
+        Day2
 
     -- Modules included in this library but not exported.
     -- other-modules:
@@ -30,6 +31,8 @@ library
     -- other-extensions:
     build-depends:
         base ^>=4.17.2.0,
+        containers ^>=0.6.7,
+        megaparsec ^>=9.6.1,
         text ^>=2.0.1
     hs-source-dirs:   src
     default-language: GHC2021
@@ -46,6 +49,7 @@ executable aoc2023
         aoc2023,
         base ^>=4.17.2.0,
         filepath ^>=1.4.2.2,
+        megaparsec ^>=9.6.1,
         text ^>=2.0.1
     ghc-options:      -threaded -rtsopts "-with-rtsopts=-N"
 
@@ -60,7 +64,8 @@ test-suite aoc2023-test
     hs-source-dirs:   test
     main-is:          Main.hs
     other-modules:
-        Day1Spec
+        Day1Spec,
+        Day2Spec
     build-depends:
         aoc2023,
         base ^>=4.17.2.0,
