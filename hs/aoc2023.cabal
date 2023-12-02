@@ -16,7 +16,7 @@ maintainer:         ephemient@gmail.com
 
 -- A copyright notice.
 copyright:          (c) 2023 Daniel Lin
--- category:
+category:           None
 extra-source-files: README.md
 
 library

@@ -52,6 +52,8 @@ jobs:
         working-directory: hs
       - run: cabal test all --test-show-details=direct
         working-directory: hs
+      - run: cabal check
+        working-directory: hs
       - uses: actions/upload-artifact@v3
         with:
           name: aoc2023-hs
