@@ -5,7 +5,6 @@ import kotlinx.benchmark.Benchmark
 import kotlinx.benchmark.Scope
 import kotlinx.benchmark.Setup
 import kotlinx.benchmark.State
-import kotlinx.coroutines.runBlocking
 
 @State(Scope.Benchmark)
 class Day2Bench {
@@ -13,9 +12,7 @@ class Day2Bench {
 
     @Setup
     fun setup() {
-        input = runBlocking {
-            getDayInput(2)
-        }
+        input = getDayInput(2)
     }
 
     @Benchmark

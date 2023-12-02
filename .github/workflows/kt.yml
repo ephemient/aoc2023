@@ -46,6 +46,10 @@ jobs:
           path: |
             kt/aoc2023-exe/build/bin/*/debugExecutable/*.kexe
             kt/aoc2023-exe/build/bin/*/releaseExecutable/*.kexe
+      - uses: actions/upload-artifact@v3
+        with:
+          name: aoc2023-js
+          path: kt/build/js/packages/aoc2023-aoc2023-exe/kotlin/*
 
   run-jvm:
     needs: [ get-inputs, build ]
@@ -82,5 +86,24 @@ jobs:
           name: aoc2023-kexe
       - run: chmod +x linuxX64/*/aoc2023-exe.kexe
       - run: linuxX64/releaseExecutable/aoc2023-exe.kexe
+        env:
+          AOC2023_DATADIR: inputs
+
+  run-node:
+    needs: [ get-inputs, build ]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: inputs
+          path: inputs
+      - uses: actions/download-artifact@v3
+        with:
+          name: aoc2023-js
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 21.3.0
+      - run: node aoc2023-aoc2023-exe.js
         env:
           AOC2023_DATADIR: inputs

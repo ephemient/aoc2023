@@ -18,10 +18,14 @@ gradlePlugin {
             id = "com.github.ephemient.aoc2023.kotlin.multiplatform.native.platforms"
             implementationClass = "com.github.ephemient.aoc2023.buildsrc.KotlinMultiplatformNativePlatformsPlugin"
         }
+        create("KotlinMultiplatformJsPlatformPlugin") {
+            id = "com.github.ephemient.aoc2023.kotlin.multiplatform.js.platform"
+            implementationClass = "com.github.ephemient.aoc2023.buildsrc.KotlinMultiplatformJsPlatformPlugin"
+        }
     }
 }
 
 dependencies {
-    implementation(kotlin("gradle-plugin", libs.versions.kotlin.get()))
+    implementation(kotlin("gradle-plugin", libs.versions.kotlin.asProvider().get()))
     implementation(libs.detekt.plugin)
 }

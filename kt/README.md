@@ -18,7 +18,7 @@ Run [kotlinx.benchmark](https://github.com/Kotlin/kotlinx-benchmark) ([JMH](http
 Print solutions for the inputs provided in local data files:
 
 ```sh
-./gradlew :aoc2023-exe:jvmRun :aoc2023-exe:run{Debug,Release}Executable{LinuxX64,Macos{X64,Arm64}}
+./gradlew :aoc2023-exe:jvmRun :aoc2023-exe:runReleaseExecutable{LinuxX64,Macos{X64,Arm64}} :aoc2023-exe:jsNodeProductionRun
 ```
 
 Run all checks, including [Detekt](https://detekt.github.io/) static code analysis and [ktlint](https://ktlint.github.io/) formatter:

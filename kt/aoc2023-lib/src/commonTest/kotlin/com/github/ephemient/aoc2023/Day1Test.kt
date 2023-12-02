@@ -1,17 +1,16 @@
 package com.github.ephemient.aoc2023
 
-import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class Day1Test {
     @Test
-    fun part1() = runTest {
+    fun part1() {
         assertEquals(142, Day1(example1).part1())
     }
 
     @Test
-    fun part2() = runTest {
+    fun part2() {
         assertEquals(281, Day1(example2).part2())
     }
 

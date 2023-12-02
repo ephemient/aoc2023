@@ -9,6 +9,7 @@ plugins {
     id("com.github.ephemient.aoc2023.detekt")
     id("com.github.ephemient.aoc2023.kotlin.multiplatform.jvm.platform")
     id("com.github.ephemient.aoc2023.kotlin.multiplatform.native.platforms")
+    id("com.github.ephemient.aoc2023.kotlin.multiplatform.js.platform")
 }
 
 application {
@@ -18,6 +19,12 @@ application {
 kotlin {
     jvm {
         withJava()
+    }
+
+    js {
+        useCommonJs()
+        nodejs()
+        binaries.executable()
     }
 
     targets.withType<KotlinJvmTarget> {
@@ -36,7 +43,6 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(projects.aoc2023Lib)
-                implementation(libs.kotlinx.coroutines)
             }
         }
 
@@ -51,6 +57,12 @@ kotlin {
                 implementation(libs.okio)
             }
         }
+
+        jsMain {
+            dependencies {
+                implementation(libs.kotlin.wrappers.node)
+            }
+        }
     }
 }
 
@@ -62,6 +74,7 @@ benchmark {
     targets {
         register("jvmTest")
     }
+
     configurations {
         getByName("main") {
             warmups = 1

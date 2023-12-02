@@ -8,5 +8,5 @@ val days = listOf(
 data class Day(
     val day: Int,
     val name: String = day.toString(),
-    val solver: (String) -> List<suspend () -> Any?>,
+    val solver: (String) -> List<() -> Any?>,
 )

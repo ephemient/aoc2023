@@ -3,14 +3,19 @@ plugins {
     id("com.github.ephemient.aoc2023.detekt")
     id("com.github.ephemient.aoc2023.kotlin.multiplatform.jvm.platform")
     id("com.github.ephemient.aoc2023.kotlin.multiplatform.native.platforms")
+    id("com.github.ephemient.aoc2023.kotlin.multiplatform.js.platform")
 }
 
 kotlin {
+    js {
+        browser()
+        nodejs()
+    }
+
     sourceSets {
         commonTest {
             dependencies {
                 implementation(kotlin("test"))
-                implementation(libs.kotlinx.coroutines.test)
             }
         }
 
