@@ -11,6 +11,11 @@ on:
   workflow_dispatch:
 
 jobs:
+  get-inputs:
+    uses: ephemient/aoc2023/.github/workflows/get-inputs.yml@main
+    secrets:
+      SESSION: ${{ secrets.SESSION }}
+
   build:
     runs-on: ubuntu-latest
 
@@ -31,3 +36,28 @@ jobs:
         working-directory: py
       - run: poetry run pytest --benchmark-skip
         working-directory: py
+      - run: poetry build
+        working-directory: py
+      - uses: actions/upload-artifact@v3
+        with:
+          name: aoc2023-py
+          path: py/dist/*.whl
+
+  run:
+    needs: [ get-inputs, build ]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/download-artifact@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
+      - run: |
+          python -m venv .
+          . bin/activate
+          pip install *.whl
+        working-directory: aoc2023-py
+      - run: aoc2023-py/bin/aoc2023
+        env:
+          AOC2023_DATADIR: inputs
+          PYTHON_HOME: aoc2023-py
