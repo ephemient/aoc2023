@@ -7,6 +7,7 @@ import Data.Text (Text)
 import qualified Data.Text.IO as TIO (readFile)
 import qualified Day1 (part1, part2)
 import qualified Day2 (part1, part2)
+import qualified Day3 (part1, part2)
 import System.Environment (lookupEnv)
 import System.FilePath (combine)
 
@@ -24,5 +25,9 @@ main = defaultMain
   , env (getDayInput 2) $ \input -> bgroup "Day 2"
       [ bench "part 1" $ nf Day2.part1 input
       , bench "part 2" $ nf Day2.part2 input
+      ]
+  , env (getDayInput 3) $ \input -> bgroup "Day 3"
+      [ bench "part 1" $ nf Day3.part1 input
+      , bench "part 2" $ nf Day3.part2 input
       ]
   ]

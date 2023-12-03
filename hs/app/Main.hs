@@ -3,6 +3,7 @@ module Main (main) where
 
 import qualified Day1 (part1, part2)
 import qualified Day2 (part1, part2)
+import qualified Day3 (part1, part2)
 
 import Control.Monad (ap, when)
 import Data.Foldable (find)
@@ -34,3 +35,4 @@ main :: IO ()
 main = do
     run 1 print [Day1.part1, Day1.part2]
     run 2 (either (fail . errorBundlePretty) print) [Day2.part1, Day2.part2]
+    run 3 print [Day3.part1, Day3.part2]
