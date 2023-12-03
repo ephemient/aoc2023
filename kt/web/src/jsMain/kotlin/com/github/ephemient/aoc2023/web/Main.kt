@@ -5,9 +5,9 @@ import js.promise.await
 import kotlinx.browser.document
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.yield
 import kotlinx.dom.appendText
 import kotlinx.dom.clear
 import kotlinx.html.dom.append
@@ -30,25 +30,22 @@ suspend fun main() {
     val outputField = document.getElementById("output") as HTMLPreElement
     val form = document.getElementById("container") as HTMLFormElement
     daySelect.append {
-        repeat(lib.getDayCount()) { i ->
+        repeat(lib.getDayCount()) {
             option {
-                value = i.toString()
-                +"Day ${lib.getDayName(i)}"
+                value = it.toString()
+                +"Day ${lib.getDayName(it)}"
             }
         }
     }
     val job = SupervisorJob()
     form.onsubmit = { event ->
-        val day = daySelect.value.toInt()
+        val index = daySelect.value.toInt()
         val input = inputField.value
         job.cancelChildren()
         outputField.clear()
         GlobalScope.launch(job) {
-            var part = 0
-            while (true) {
-                val result = lib.solveDayPart(day, part++, input) ?: break
-                outputField.appendText("$result\n")
-                yield()
+            for (result in Array(lib.getDayParts(index)) { async { lib.solveDayPart(index, it, input) } }) {
+                outputField.appendText("${result.await()}\n")
             }
         }
         event.preventDefault()

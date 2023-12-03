@@ -10,11 +10,12 @@ fun getDayCount(): Int = days.size
 
 @OptIn(ExperimentalJsExport::class)
 @JsExport
-fun getDayName(day: Int): String = days[day].name
+fun getDayParts(index: Int): Int = days[index].parts
 
 @OptIn(ExperimentalJsExport::class)
 @JsExport
-fun solveDayPart(day: Int, part: Int, input: String): String? {
-    val block = days[day].solver(input).getOrNull(part) ?: return null
-    return block().toString()
-}
+fun solveDayPart(index: Int, part: Int, input: String): String = days[index].solver(input)[part]().toString()
+
+@OptIn(ExperimentalJsExport::class)
+@JsExport
+fun getDayName(index: Int): String = days[index].name

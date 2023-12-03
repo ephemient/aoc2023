@@ -43,6 +43,7 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(projects.aoc2023Lib)
+                implementation(libs.kotlinx.coroutines)
             }
         }
 
