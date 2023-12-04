@@ -23,10 +23,12 @@ library
     exposed-modules:
         Day1,
         Day2,
-        Day3
+        Day3,
+        Day4
 
     -- Modules included in this library but not exported.
-    -- other-modules:
+    other-modules:
+        Common
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
@@ -68,7 +70,8 @@ test-suite aoc2023-test
     other-modules:
         Day1Spec,
         Day2Spec,
-        Day3Spec
+        Day3Spec,
+        Day4Spec
     build-depends:
         aoc2023,
         base ^>=4.17.2.0,
