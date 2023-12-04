@@ -7,7 +7,7 @@ fn parse(data: &str) -> Vec<usize> {
             Some(
                 left.split_whitespace()
                     .collect::<HashSet<_>>()
-                    .intersection(&right.split_whitespace().collect::<HashSet<_>>())
+                    .intersection(&right.split_whitespace().collect())
                     .count(),
             )
         })
