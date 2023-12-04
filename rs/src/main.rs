@@ -1,11 +1,11 @@
-use aoc2023::{day1, day2, day3};
+use aoc2023::{day1, day2, day3, day4};
 use std::collections::HashSet;
 use std::env;
 use std::fs;
 use std::io;
 use std::path::Path;
 
-fn get_day_input(day: u8) -> Result<String, io::Error> {
+fn get_day_input(day: u8) -> io::Result<String> {
     let datadir = env::var("AOC2023_DATADIR")
         .ok()
         .filter(|s| !s.is_empty())
@@ -37,6 +37,14 @@ fn main() -> io::Result<()> {
         println!("Day 3");
         println!("{:?}", day3::part1(&data));
         println!("{:?}", day3::part2(&data));
+        println!();
+    }
+
+    if args.is_empty() || args.contains("4") {
+        let data = get_day_input(4)?;
+        println!("Day 4");
+        println!("{:?}", day4::part1(&data));
+        println!("{:?}", day4::part2(&data));
         println!();
     }
 
