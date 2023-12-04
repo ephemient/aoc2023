@@ -25,6 +25,7 @@ aoc2023 = "aoc2023.main:main"
 day1 = "aoc2023.day1:parts"
 day2 = "aoc2023.day2:parts"
 day3 = "aoc2023.day3:parts"
+day4 = "aoc2023.day4:parts"
 
 [tool.black]
 target_version = ["py312"]
