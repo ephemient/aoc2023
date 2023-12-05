@@ -1,7 +1,11 @@
 package com.github.ephemient.aoc2023.web
 
-import js.import.import
+import com.github.ephemient.aoc2023.days
+import com.github.ephemient.aoc2023.web.common.DefaultSolver
+import com.github.ephemient.aoc2023.web.common.WasmSolver
+import js.promise.Promise
 import js.promise.await
+import js.promise.catch
 import kotlinx.browser.document
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.SupervisorJob
@@ -17,12 +21,15 @@ import org.w3c.dom.HTMLPreElement
 import org.w3c.dom.HTMLSelectElement
 import org.w3c.dom.HTMLTextAreaElement
 
-suspend fun main() {
-    val lib = try {
-        import<dynamic>("./aoc2023-web-wasm-js.mjs").await().default.unsafeCast<Lib>()
+fun main() {
+    val solver = try {
+        Promise.resolve(WorkerSolver("worker/worker.js"))
     } catch (e: dynamic) {
         console.error(e)
-        JsLib
+        WasmSolver("wasm/aoc2023-web-wasm-wasm-js.mjs").catch {
+            console.error(it)
+            DefaultSolver
+        }.then { AsyncSolver(it) }
     }
 
     val daySelect = document.getElementById("day") as HTMLSelectElement
@@ -30,10 +37,10 @@ suspend fun main() {
     val outputField = document.getElementById("output") as HTMLPreElement
     val form = document.getElementById("container") as HTMLFormElement
     daySelect.append {
-        repeat(lib.getDayCount()) {
+        for ((i, day) in days.withIndex()) {
             option {
-                value = it.toString()
-                +"Day ${lib.getDayName(it)}"
+                value = i.toString()
+                +"Day ${day.name}"
             }
         }
     }
@@ -44,7 +51,7 @@ suspend fun main() {
         job.cancelChildren()
         outputField.clear()
         GlobalScope.launch(job) {
-            for (result in Array(lib.getDayParts(index)) { async { lib.solveDayPart(index, it, input) } }) {
+            for (result in Array(days[index].parts) { async { solver.await().solveDayPart(index, it, input) } }) {
                 outputField.appendText("${result.await()}\n")
             }
         }
