@@ -1,0 +1,32 @@
+name: Kotlin Web
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: gh-docs
+          path: gh-docs
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: gradle/gradle-build-action@v2
+        with:
+          arguments: :web:jsBrowserDistribution
+          build-root-directory: kt
+      - run: rsync --archive --delete --verbose --whole-file kt/web/build/dist/js/productionExecutable/ gh-docs/kt-web/
+      - uses: EndBug/add-and-commit@v9
+        with:
+          cwd: gh-docs
+          add: kt-web
+          message: 'Kotlin Web ${{ github.sha }}'
