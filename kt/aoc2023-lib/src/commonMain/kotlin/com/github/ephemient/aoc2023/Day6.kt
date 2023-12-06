@@ -1,5 +1,9 @@
 package com.github.ephemient.aoc2023
 
+import kotlin.math.ceil
+import kotlin.math.floor
+import kotlin.math.sqrt
+
 class Day6(private val input: String) {
     private val races = input.lines().let { (line1, line2) ->
         NUMBER.findAll(line1).map { it.value.toInt() } zip
@@ -21,30 +25,13 @@ class Day6(private val input: String) {
         private val NUMBER = """\d+""".toRegex()
 
         private fun winCount(time: Int, distance: Int): Int {
-            val lo = run {
-                var lo = 0
-                var hi = time / 2 + 1
-                while (lo + 1 < hi) {
-                    println("<$lo..$hi")
-                    val x = lo + (hi - lo) / 2
-                    val y = x * (time - x)
-                    if (y <= distance) lo = x + 1 else hi = x
-                }
-                hi
-            }
-            val hi = run {
-                var lo = time / 2
-                var hi = time + 1
-                while (lo + 1 < hi) {
-                    println(">$lo..$hi")
-                    val x = lo + (hi - lo) / 2
-                    val y = x * (time - x)
-                    if (y <= distance) hi = x + 1 else lo = x
-                }
-                lo
-            }
-            println("$time/$distance $lo..$hi")
-            return hi - lo + 1
+            // x * (time - x) > distance
+            // x^2 - time*x < -distance
+            // x^2 - time*x + (time/2)^2 < (time/2)^2 - distance
+            // abs(x - time/2) < sqrt((time/2)^2 - distance)
+            val b = time / 2.0
+            val d = sqrt(b * b - distance)
+            return (ceil(b - d) - floor(b + d) + 1).toInt()
         }
     }
 }
