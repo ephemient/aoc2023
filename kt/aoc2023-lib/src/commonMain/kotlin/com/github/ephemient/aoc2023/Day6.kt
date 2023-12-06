@@ -30,7 +30,7 @@ class Day6(private val input: String) {
             val b = time / 2.0
             val d = sqrt(b * b - distance)
             println("$time/$distance = ${b - d}..${b + d}")
-            return (ceil(b - d) - floor(b + d) + 1).toLong()
+            return (floor(b + d) - ceil(b - d) + 1).toLong()
         }
     }
 }
