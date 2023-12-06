@@ -17,6 +17,8 @@ class Day6Test {
     companion object {
         private val example =
             """
+            |Time:      7  15   30
+            |Distance:  9  40  200
             |""".trimMargin()
     }
 }
