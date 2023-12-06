@@ -1,0 +1,22 @@
+package com.github.ephemient.aoc2023
+
+import kotlin.test.Test
+import kotlin.test.assertEquals
+
+class Day6Test {
+    @Test
+    fun part1() {
+        assertEquals(0, Day6(example).part1())
+    }
+
+    @Test
+    fun part2() {
+        assertEquals(0, Day6(example).part2())
+    }
+
+    companion object {
+        private val example =
+            """
+            |""".trimMargin()
+    }
+}
