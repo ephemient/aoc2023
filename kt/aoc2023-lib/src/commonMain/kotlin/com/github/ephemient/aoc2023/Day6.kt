@@ -5,7 +5,7 @@ import kotlin.math.floor
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
-class Day6(input: String) {
+class Day6(private val input: String) {
     private val races = input.lines().let { (line1, line2) ->
         NUMBER.findAll(line1).map { it.value.toInt() } zip
             NUMBER.findAll(line2).map { it.value.toInt() }
@@ -15,7 +15,10 @@ class Day6(input: String) {
         acc * winCount(time, distance)
     }
 
-    fun part2(): Int = 0
+    fun part2(): Int {
+        val (time, distance) = NUMBER.findAll(input.replace(" ", "")).map { it.value.toInt() }.toList()
+        return winCount(time, distance)
+    }
 
     companion object {
         private val NUMBER = """\d+""".toRegex()
