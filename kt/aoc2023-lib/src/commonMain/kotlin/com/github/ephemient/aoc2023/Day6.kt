@@ -29,7 +29,7 @@ class Day6(input: String) {
             val hi = time / 2.0 + sqrt(time * time / 4.0 - distance)
             println("$time/$distance $lo..$hi")
             check(0 <= lo && lo <= hi && hi <= time)
-            return (floor(hi) - ceil(lo) + 1).roundToInt()
+            return (floor(Double.fromBits(hi.toRawBits() - 1)) - ceil(Double.fromBits(lo.toRawBits() + 1)) + 1).roundToInt()
         }
     }
 }
