@@ -5,13 +5,14 @@ import kotlin.math.floor
 import kotlin.math.sqrt
 
 class Day6(private val input: String) {
-    private val races = input.lines().let { (line1, line2) ->
-        NUMBER.findAll(line1).map { it.value.toLong() } zip
-            NUMBER.findAll(line2).map { it.value.toLong() }
-    }
-
-    fun part1(): Long = races.fold(1) { acc, (time, distance) ->
-        acc * winCount(time, distance)
+    fun part1(): Long {
+        val races = input.lines().let { (line1, line2) ->
+            NUMBER.findAll(line1).map { it.value.toLong() } zip
+                    NUMBER.findAll(line2).map { it.value.toLong() }
+        }
+        return races.fold(1) { acc, (time, distance) ->
+            acc * winCount(time, distance)
+        }
     }
 
     fun part2(): Long {
@@ -29,7 +30,6 @@ class Day6(private val input: String) {
             // abs(x - time/2) < sqrt((time/2)^2 - distance)
             val b = time / 2.0
             val d = sqrt(b * b - distance)
-            println("$time/$distance = ${b - d}..${b + d}")
             val lo = Double.fromBits((b - d).toRawBits() + 1)
             val hi = Double.fromBits((b + d).toRawBits() - 1)
             return (floor(hi) - ceil(lo) + 1).toLong()
