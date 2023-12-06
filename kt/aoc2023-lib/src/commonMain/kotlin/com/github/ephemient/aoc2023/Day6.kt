@@ -24,9 +24,7 @@ class Day6(private val input: String) {
             // abs(x - time/2) < sqrt((time/2)^2 - distance)
             val b = time / 2.0
             val d = sqrt(b * b - distance)
-            val lo = Double.fromBits((b - d).toRawBits() + 1)
-            val hi = Double.fromBits((b + d).toRawBits() - 1)
-            return (floor(hi) - ceil(lo) + 1).toLong()
+            return (ceil(b + d - 1) - floor(b - d + 1) + 1).toLong()
         }
     }
 }
