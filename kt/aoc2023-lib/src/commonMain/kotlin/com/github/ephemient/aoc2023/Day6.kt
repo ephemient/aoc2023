@@ -12,7 +12,6 @@ class Day6(input: String) {
     }
 
     fun part1(): Int = races.fold(1) { acc, (time, distance) ->
-        println("$time/$distance = ${winCount(time, distance)}")
         acc * winCount(time, distance)
     }
 
