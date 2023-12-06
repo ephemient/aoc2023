@@ -25,6 +25,7 @@ class Day6(private val input: String) {
                 var lo = 0
                 var hi = time / 2 + 1
                 while (lo < hi) {
+                    println("<$lo..$hi")
                     val x = lo + (hi - lo) / 2
                     val y = x * (time - x)
                     if (y <= distance) lo = x + 1 else hi = x
@@ -35,6 +36,7 @@ class Day6(private val input: String) {
                 var lo = time / 2
                 var hi = time + 1
                 while (lo < hi) {
+                    println(">$lo..$hi")
                     val x = lo + (hi - lo) / 2
                     val y = x * (time - x)
                     if (y <= distance) hi = x + 1 else lo = x
