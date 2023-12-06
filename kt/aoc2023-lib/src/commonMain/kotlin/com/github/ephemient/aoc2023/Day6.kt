@@ -28,7 +28,8 @@ class Day6(input: String) {
             // x < time/2 + sqrt(time^2/4 - distance)
             val lo = ceil(time / 2.0 - sqrt(time * time / 4.0 - distance)).roundToInt()
             val hi = floor(time / 2.0 + sqrt(time * time / 4.0 - distance)).roundToInt()
-            check(0 <= lo && lo <= hi && hi <= time) { "$time/$distance $lo/$hi" }
+            println("$time/$distance $lo..$hi")
+            check(0 <= lo && lo <= hi && hi <= time)
             return hi - lo + 1
         }
     }
