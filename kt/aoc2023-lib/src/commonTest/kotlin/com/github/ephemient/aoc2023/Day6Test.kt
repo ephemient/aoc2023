@@ -6,7 +6,7 @@ import kotlin.test.assertEquals
 class Day6Test {
     @Test
     fun part1() {
-        assertEquals(0, Day6(example).part1())
+        assertEquals(288, Day6(example).part1())
     }
 
     @Test
