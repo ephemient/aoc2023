@@ -11,7 +11,7 @@ class Day6(input: String) {
             NUMBER.findAll(line2).map { it.value.toInt() }
     }
 
-    fun part1(): Int = races.sumOf { (time, distance) -> winCount(time, distance) }
+    fun part1(): Int = races.fold(1) { acc, (time, distance) -> acc * winCount(time, distance) }
 
     fun part2(): Int = 0
 
