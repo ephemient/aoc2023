@@ -22,14 +22,7 @@ class Day6(input: String) {
         private val NUMBER = """\d+""".toRegex()
 
         private fun winCount(time: Int, distance: Int): Int {
-            // wait * (time - wait) > distance
-            // wait * wait - time * wait < -distance
-            // (wait - time/2)^2 < time^2/4 + distance
-            // wait = time/2 ± sqrt(time^2/4 + distance)
-            val lo = ceil(time / 2.0 - sqrt(time * time / 4.0 + distance)).roundToInt()
-            val hi = floor(time / 2.0 + sqrt(time * time / 4.0 + distance)).roundToInt()
-            check(0 <= lo && lo <= hi && hi <= time) { "$time/$distance $lo/$hi" }
-            return hi - lo + 1
+            return (0..time).count { it * (time - it) > distance }
         }
     }
 }
