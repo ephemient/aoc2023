@@ -5,20 +5,14 @@ import kotlin.math.floor
 import kotlin.math.sqrt
 
 class Day6(private val input: String) {
-    fun part1(): Long {
-        val races = input.lines().let { (line1, line2) ->
-            NUMBER.findAll(line1).map { it.value.toLong() } zip
-                    NUMBER.findAll(line2).map { it.value.toLong() }
-        }
-        return races.fold(1) { acc, (time, distance) ->
-            acc * winCount(time, distance)
-        }
-    }
+    fun part1(): Long = NUMBER.findAll(input.substringBefore('\n')).map { it.value.toLong() }
+        .zip(NUMBER.findAll(input.substringAfter('\n')).map { it.value.toLong() }, ::winCount)
+        .fold(1, Long::times)
 
-    fun part2(): Long {
-        val (time, distance) = NUMBER.findAll(input.replace(" ", "")).map { it.value.toLong() }.toList()
-        return winCount(time, distance)
-    }
+    fun part2(): Long = winCount(
+        input.substringBefore('\n').filter(Char::isDigit).toLong(),
+        input.substringAfter('\n').filter(Char::isDigit).toLong(),
+    )
 
     companion object {
         private val NUMBER = """\d+""".toRegex()
