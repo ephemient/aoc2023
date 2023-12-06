@@ -17,6 +17,8 @@ class Day6(private val input: String) {
 
     fun part2(): Int {
         val (time, distance) = NUMBER.findAll(input.replace(" ", "")).map { it.value.toInt() }.toList()
+        println(time)
+        println(distance)
         return winCount(time, distance)
     }
 
