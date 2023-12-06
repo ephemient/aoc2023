@@ -16,8 +16,6 @@ class Day6(private val input: String) {
 
     fun part2(): Long {
         val (time, distance) = NUMBER.findAll(input.replace(" ", "")).map { it.value.toLong() }.toList()
-        println(time)
-        println(distance)
         return winCount(time, distance)
     }
 
@@ -31,6 +29,7 @@ class Day6(private val input: String) {
             // abs(x - time/2) < sqrt((time/2)^2 - distance)
             val b = time / 2.0
             val d = sqrt(b * b - distance)
+            println("$time/$distance = ${b - d}..${b + d}")
             return (ceil(b - d) - floor(b + d) + 1).toLong()
         }
     }
