@@ -24,7 +24,7 @@ class Day6(private val input: String) {
             val lo = run {
                 var lo = 0
                 var hi = time / 2 + 1
-                while (lo < hi) {
+                while (lo + 1 < hi) {
                     println("<$lo..$hi")
                     val x = lo + (hi - lo) / 2
                     val y = x * (time - x)
@@ -35,7 +35,7 @@ class Day6(private val input: String) {
             val hi = run {
                 var lo = time / 2
                 var hi = time + 1
-                while (lo < hi) {
+                while (lo + 1 < hi) {
                     println(">$lo..$hi")
                     val x = lo + (hi - lo) / 2
                     val y = x * (time - x)
