@@ -25,11 +25,11 @@ class Day6(input: String) {
             // x^2 - time*x + time^2/4 < time^2/4 - distance
             // (x - time/2)^2 < sqrt(time^2/4 - distance)
             // x < time/2 + sqrt(time^2/4 - distance)
-            val lo = ceil(time / 2.0 - sqrt(time * time / 4.0 - distance)).roundToInt()
-            val hi = floor(time / 2.0 + sqrt(time * time / 4.0 - distance)).roundToInt()
+            val lo = time / 2.0 - sqrt(time * time / 4.0 - distance)
+            val hi = time / 2.0 + sqrt(time * time / 4.0 - distance)
             println("$time/$distance $lo..$hi")
             check(0 <= lo && lo <= hi && hi <= time)
-            return hi - lo + 1
+            return (floor(hi) - ceil(lo) + 1).roundToInt()
         }
     }
 }
