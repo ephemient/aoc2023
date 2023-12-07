@@ -18,7 +18,7 @@ class Day7(input: String) {
 
     companion object {
         private val comparator = compareBy<List<Int>> { hand ->
-            val counts = hand.groupingBy { it }.eachCount().values.sortedDescending()
+            val counts = hand.filter { it >= 0 }.groupingBy { it }.eachCount().values.sortedDescending()
             val jokers = hand.count { it < 0 }
             when {
                 counts.getOrElse(0) { 0 } + jokers >= 5 -> 6
