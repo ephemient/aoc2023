@@ -6,17 +6,15 @@ class Day7(input: String) {
         IndexedValue(bid.toIntOrNull() ?: return@mapNotNull null, hand)
     }
 
-    fun part1(): Int = hands
-        .map { (bid, hand) -> IndexedValue(bid, hand.map("23456789TJQKA"::indexOf)) }
+    private fun solve(cards: String): Int = hands
+        .map { (bid, hand) -> IndexedValue(bid, hand.map(cards::indexOf)) }
         .sortedWith(compareBy(comparator, selector = { it.value }))
         .withIndex()
         .sumOf { (i, value) -> (i + 1) * value.index }
 
-    fun part2(): Int = hands
-        .map { (bid, hand) -> IndexedValue(bid, hand.map("23456789TQKA"::indexOf)) }
-        .sortedWith(compareBy(comparator, selector = { it.value }))
-        .withIndex()
-        .sumOf { (i, value) -> (i + 1) * value.index }
+    fun part1(): Int = solve("23456789TJQKA")
+
+    fun part2(): Int = solve("23456789TQKA")
 
     companion object {
         private val comparator = compareBy<List<Int>> { hand ->
