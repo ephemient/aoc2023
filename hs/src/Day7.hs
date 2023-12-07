@@ -6,10 +6,10 @@ module Day7 (part1, part2) where
 
 import Data.Char (isSpace)
 import Data.Function (on)
-import Data.List (elemIndex, sort, sortBy)
+import Data.List (elemIndex, sort, sortOn)
 import qualified Data.Map as Map (elems, fromListWith)
 import Data.Maybe (isNothing)
-import Data.Ord (Down(Down), comparing)
+import Data.Ord (Down(Down))
 import Data.Text (Text)
 import qualified Data.Text as T (lines, unpack, split)
 import qualified Data.Text.Read as T (decimal)
@@ -24,15 +24,14 @@ handType hand
   | c0 + jokers >= 2 = 1
   | otherwise = 0
   where
-    (c0 : c1 : _) = sortBy (comparing Down)
-        (Map.elems $ Map.fromListWith (+) [(c, 1) | Just c <- hand]) ++ repeat 0
+    (c0:c1:_) = sortOn Down (Map.elems $ Map.fromListWith (+) [(c, 1) | Just c <- hand]) ++ [0, 0]
     jokers = length $ filter isNothing hand
 
 solve :: String -> Text -> Int
 solve cards input = sum [rank * bid | (rank, (_, _, bid)) <- zip [1..] $ sort hands] where
     hands =
       [ (handType hand', hand', bid')
-      | hand : bid : _ <- T.split isSpace <$> T.lines input
+      | hand:bid:_ <- T.split isSpace <$> T.lines input
       , let hand' = (`elemIndex` cards) <$> T.unpack hand
       , bid' <- either (const []) ((: []) . fst) $ T.decimal bid
       ]
