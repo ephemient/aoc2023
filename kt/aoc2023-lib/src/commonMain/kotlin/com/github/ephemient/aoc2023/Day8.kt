@@ -20,9 +20,11 @@ class Day8(input: String) {
     fun part1(): Int = instructions.length * generateSequence("AAA", ::step).indexOf("ZZZ")
 
     fun part2(): Long = instructions.length *
-        table.keys.filter { it.endsWith('A') }.map { start ->
-            generateSequence(start, ::step).indexOfFirst { it.endsWith('Z') }
-        }.fold(1L) { x, y -> lcm(x, y.toLong()) }
+        table.keys.filter { it.endsWith('A') }.fold(1L) { acc, start ->
+            val (index, end) = generateSequence(start, ::step).withIndex().first { (_, end) -> end.endsWith('Z') }
+            check(step(start) == step(end)) { "required for lcm solution" }
+            lcm(acc, index.toLong())
+        }
 
     companion object {
         private val INSTRUCTIONS = """[LR]+""".toRegex()
