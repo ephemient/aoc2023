@@ -1,3 +1,4 @@
+import io.gitlab.arturbosch.detekt.Detekt
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 
@@ -43,12 +44,6 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(projects.aoc2023Lib)
-                implementation(libs.kotlinx.coroutines)
-            }
-        }
-
-        commonTest {
-            dependencies {
                 implementation(libs.kotlinx.benchmark)
             }
         }
@@ -62,6 +57,11 @@ kotlin {
         jsMain {
             dependencies {
                 implementation(libs.kotlin.wrappers.node)
+
+                // Benchmark generation failure without these
+                implementation(libs.kotlinx.coroutines)
+                implementation("io.github.turansky.seskar:seskar-core:2.16.0")
+                implementation("io.github.turansky.seskar:seskar-react:2.16.0")
             }
         }
     }
@@ -73,14 +73,27 @@ allOpen {
 
 benchmark {
     targets {
-        register("jvmTest")
+        register("jvm")
+        register("linuxX64")
+        register("macosX64")
+        register("macosArm64")
+        register("js")
     }
 
     configurations {
         getByName("main") {
             warmups = 1
             iterationTime = 1
+            iterationTimeUnit = "SECONDS"
             outputTimeUnit = "SECONDS"
+            val benchmarkInclude: String? by project
+            val benchmarkExclude: String? by project
+            benchmarkInclude?.let(::include)
+            benchmarkExclude?.let(::exclude)
         }
     }
 }
+
+tasks.withType<Detekt>()
+    .matching { it.name.endsWith("Benchmark") }
+    .configureEach { isEnabled = false }

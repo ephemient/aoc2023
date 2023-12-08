@@ -48,7 +48,11 @@ jobs:
           java-version: 17
       - uses: gradle/gradle-build-action@v2
         with:
-          arguments: benchmark
+          arguments: assembleBenchmarks
+          build-root-directory: kt
+      - uses: gradle/gradle-build-action@v2
+        with:
+          arguments: --max-workers 1 benchmark
           build-root-directory: kt
         env:
           AOC2023_DATADIR: ${{ github.workspace }}/inputs

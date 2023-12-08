@@ -2,10 +2,6 @@
 
 package com.github.ephemient.aoc2023.exe
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-
-@Suppress("InjectDispatcher")
-suspend fun main(vararg args: String) = withContext(Dispatchers.Default) {
+fun main(vararg args: String) {
     mainImpl(args)
 }
