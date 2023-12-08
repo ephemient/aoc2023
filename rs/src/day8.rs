@@ -1,4 +1,4 @@
-use crate::math::lcm;
+use num_integer::lcm;
 use std::{collections::BTreeMap, iter};
 
 struct Network<'a> {
