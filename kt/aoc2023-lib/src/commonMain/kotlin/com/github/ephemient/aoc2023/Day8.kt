@@ -23,7 +23,7 @@ class Day8(input: String) {
         }.fold(1L) { x, y -> lcm(x, y.toLong()) }
 
     companion object {
-        private val INSTRUCTIONS = """\A[LR]+""".toRegex()
+        private val INSTRUCTIONS = """[LR]+""".toRegex()
         private val NODE = """(\w+) = \((\w+), (\w+)\)""".toRegex()
     }
 }
