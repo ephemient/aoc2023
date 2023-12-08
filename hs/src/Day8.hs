@@ -7,7 +7,7 @@ module Day8 (part1, part2) where
 
 import Data.Char (isAlphaNum)
 import Data.Functor (($>))
-import Data.List (elemIndex, findIndex, foldl')
+import Data.List (elemIndex, find, foldl')
 import qualified Data.Map as Map ((!), fromList, keys)
 import Data.Maybe (fromJust)
 import Data.String (IsString)
@@ -33,5 +33,6 @@ part1 input = do
     pure $ n * fromJust ("ZZZ" `elemIndex` iterate step "AAA")
 part2 input = do
     (step, n, keys) <- parse parser "" input
-    pure . (n *) . foldl' lcm 1 $ fromJust . findIndex ((== 'Z') . T.last) . iterate step <$>
-        filter ((== 'A') . T.last) keys
+    let check start (Just (i, end)) | step start == step end = i
+        findCycle start = check start . find ((== 'Z') . T.last . snd) . zip [0..] $ iterate step start
+    pure . (n *) . foldl' lcm 1 $ findCycle <$> filter ((== 'A') . T.last) keys
