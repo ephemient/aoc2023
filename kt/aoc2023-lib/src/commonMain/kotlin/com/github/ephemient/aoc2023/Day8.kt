@@ -11,7 +11,9 @@ class Day8(input: String) {
         when (char) {
             'L' -> table[acc]!!.first
             'R' -> table[acc]!!.second
-            else -> throw IllegalStateException()
+            else ->
+                @Suppress("ThrowingExceptionsWithoutMessageOrCause", "UseCheckOrError")
+                throw IllegalStateException()
         }
     }
 
