@@ -12,8 +12,7 @@ SAMPLE_INPUT = """
 def _extrapolate(nums):
     c, s, n = 1, 0, len(nums)
     for i, x in enumerate(nums):
-        s = c * x - s
-        c = c * (n - i) // (i + 1)
+        c, s = c * (n - i) // (i + 1), c * x - s
     return s
 
 
