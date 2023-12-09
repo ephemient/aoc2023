@@ -9,6 +9,7 @@ import qualified Day5 (part1, part2)
 import qualified Day6 (part1, part2)
 import qualified Day7 (part1, part2)
 import qualified Day8 (part1, part2)
+import qualified Day9 (part1, part2)
 
 import Control.Monad (ap, when)
 import Data.Foldable (find)
@@ -46,3 +47,4 @@ main = do
     run 6 (either fail print) [pure . Day6.part1, Day6.part2]
     run 7 print [Day7.part1, Day7.part2]
     run 8 (either (fail . errorBundlePretty) print) [Day8.part1, Day8.part2]
+    run 9 (either fail print) [Day9.part1, Day9.part2]
