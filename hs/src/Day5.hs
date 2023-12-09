@@ -6,7 +6,7 @@ Description:    <https://adventofcode.com/2023/day/5 Day 5: If You Give A Seed A
 module Day5 (part1, part2) where
 
 import Control.Monad.Loops (unfoldM)
-import Data.List (sortBy)
+import Data.List (sortOn)
 import Data.List.Split (chunksOf)
 import Data.Ord (comparing)
 import Data.String (IsString)
@@ -26,7 +26,7 @@ parser = (,) <$>
   where
     mappings = do
         skipSomeTill (alphaNumChar <|> char '-') $ string " map:" *> newline
-        sortBy (comparing mappingStart) <$> mapping `sepEndBy` newline <* (space1 <|> eof)
+        sortOn mappingStart <$> mapping `sepEndBy` newline <* (space1 <|> eof)
     mapping = do
         dest <- L.decimal <* hspace1
         source <- L.decimal <* hspace1
