@@ -1,19 +1,13 @@
-fn predict(nums: &[i32]) -> i32 {
-    if nums.iter().any(|&x| x != 0) {
-        nums.last().unwrap()
-            + predict(
-                &nums
-                    .iter()
-                    .zip(nums.iter().skip(1))
-                    .map(|(x, y)| y - x)
-                    .collect::<Vec<_>>(),
-            )
-    } else {
-        0
-    }
+fn predict(nums: &[i32]) -> i64 {
+    nums.iter()
+        .enumerate()
+        .fold((1, 0), |(c, s), (i, x)| {
+            (c * (nums.len() - i) / (i + 1), c as i64 * *x as i64 - s)
+        })
+        .1
 }
 
-pub fn part1(data: &str) -> i32 {
+pub fn part1(data: &str) -> i64 {
     data.lines()
         .map(|line| {
             predict(
@@ -26,7 +20,7 @@ pub fn part1(data: &str) -> i32 {
         .sum()
 }
 
-pub fn part2(data: &str) -> i32 {
+pub fn part2(data: &str) -> i64 {
     data.lines()
         .map(|line| {
             predict(

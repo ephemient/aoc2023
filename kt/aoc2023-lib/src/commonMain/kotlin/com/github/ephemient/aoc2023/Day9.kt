@@ -10,10 +10,14 @@ class Day9(input: String) {
     fun part2(): Int = nums.sumOf { it.asReversed().extrapolate() }
 
     companion object {
-        private fun List<Int>.extrapolate(): Int = if (any { it != 0 }) {
-            last() + zipWithNext { a, b -> b - a }.extrapolate()
-        } else {
-            0
+        private fun List<Int>.extrapolate(): Int {
+            var c = 1
+            var s = 0
+            for ((i, x) in withIndex()) {
+                s = c * x - s
+                c = c * (size - i) / (i + 1)
+            }
+            return s
         }
     }
 }

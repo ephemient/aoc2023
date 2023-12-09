@@ -10,9 +10,11 @@ SAMPLE_INPUT = """
 
 
 def _extrapolate(nums):
-    if any(nums):
-        return nums[-1] + _extrapolate([y - x for x, y in zip(nums, nums[1:])])
-    return 0
+    c, s, n = 1, 0, len(nums)
+    for i, x in enumerate(nums):
+        s = c * x - s
+        c = c * (n - i) // (i + 1)
+    return s
 
 
 def part1(data):
