@@ -21,6 +21,7 @@ class Day6(private val input: String) {
             // x * (time - x) > distance
             // x^2 - time*x < -distance
             // x^2 - time*x + (time/2)^2 < (time/2)^2 - distance
+            // sqrt((x - time/2)^2) < sqrt((time/2)^2 - distance)
             // abs(x - time/2) < sqrt((time/2)^2 - distance)
             val b = time / 2.0
             val d = sqrt(b * b - distance)
