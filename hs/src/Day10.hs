@@ -68,5 +68,5 @@ solve input = listToMaybe $ do
         count k@(_, False, False, _) _ = k
         count (!k, True, True, path) _ = (k + 1, True, True, path)
         (area, False, False, []) = foldl count (0, False, False, sort path) $
-            range ((0, 0), (height, width))
+            range ((0, 0), (height - 1, width - 1))
     pure (length path `div` 2, area)
