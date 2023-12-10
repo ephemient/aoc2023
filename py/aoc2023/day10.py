@@ -75,119 +75,112 @@ L7JLJL-JLJLJL--JLJ.L
 """,
 )
 
+_DIRECTIONS = {
+    "|": "ud",
+    "-": "lr",
+    "L": "ur",
+    "J": "ul",
+    "7": "ld",
+    "F": "rd",
+    "S": "udlr",
+}
 
-class Day10:
-    __doc__ = __doc__
 
-    _DIRECTIONS = {
-        "|": "ud",
-        "-": "lr",
-        "L": "ur",
-        "J": "ul",
-        "7": "ld",
-        "F": "rd",
-        "S": "udlr",
-    }
-
-    def __init__(self, data):
-        maze = data.splitlines()
-        self._maze = {
+def _parse(data):
+    maze = data.splitlines()
+    return (
+        {
             (y, x): c
             for y, line in enumerate(maze)
             for x, c in enumerate(line)
-            if c in Day10._DIRECTIONS
-        }
-        self._height = len(maze)
-        self._width = max(len(line) for line in maze)
-        self._loop = None
+            if c in _DIRECTIONS
+        },
+        max(len(line) for line in maze),
+        len(maze),
+    )
 
-    def part1(self):
-        """
-        >>> Day10(SAMPLE_INPUT_1).part1()
-        4
-        >>> Day10(SAMPLE_INPUT_2).part1()
-        8
-        """
-        (start,) = (position for position, c in self._maze.items() if c == "S")
-        queue, last_d, visited = [(0, start)], -1, set()
-        while queue:
-            d, (y, x) = heapq.heappop(queue)
-            if (y, x) in visited or (y, x) not in self._maze:
+
+def _part1(maze, width, height):
+    (start,) = (position for position, c in maze.items() if c == "S")
+    queue, last_d, visited = [(0, start)], -1, set()
+    while queue:
+        d, (y, x) = heapq.heappop(queue)
+        if (y, x) in visited or (y, x) not in maze:
+            continue
+        visited.add((y, x))
+        last_d = d
+        directions, neighbors = _DIRECTIONS[maze[(y, x)]], []
+        for direction in directions:
+            match direction:
+                case "u":
+                    neighbors.append((y - 1, x))
+                case "l":
+                    neighbors.append((y, x - 1))
+                case "d":
+                    neighbors.append((y + 1, x))
+                case "r":
+                    neighbors.append((y, x + 1))
+        for y, x in neighbors:
+            if 0 <= y < height and 0 <= x < width and (y, x) in maze:
+                heapq.heappush(queue, (d + 1, (y, x)))
+    return last_d, visited
+
+
+def part1(data):
+    """
+    >>> part1(SAMPLE_INPUT_1)
+    4
+    >>> part1(SAMPLE_INPUT_2)
+    8
+    """
+    maze, width, height = _parse(data)
+    last_d, _ = _part1(maze, width, height)
+    return last_d
+
+
+def part2(data):
+    """
+    >>> part2(SAMPLE_INPUT_3)
+    4
+    >>> part2(SAMPLE_INPUT_4)
+    4
+    >>> part2(SAMPLE_INPUT_5)
+    8
+    >>> part2(SAMPLE_INPUT_6)
+    10
+    """
+    maze, width, height = _parse(data)
+    _, loop = _part1(maze, width, height)
+    visited = set()
+    for position in itertools.chain(
+        ((0, x) for x in range(width + 1)),
+        ((y, 0) for y in range(height + 1)),
+        ((height, x) for x in range(width + 1)),
+        ((y, width) for y in range(height + 1)),
+    ):
+        stack = [position]
+        while stack:
+            position = stack.pop()
+            if position in visited:
                 continue
-            visited.add((y, x))
-            last_d = d
-            directions, neighbors = Day10._DIRECTIONS[self._maze[(y, x)]], []
-            for direction in directions:
-                match direction:
-                    case "u":
-                        neighbors.append((y - 1, x))
-                    case "l":
-                        neighbors.append((y, x - 1))
-                    case "d":
-                        neighbors.append((y + 1, x))
-                    case "r":
-                        neighbors.append((y, x + 1))
-            for y, x in neighbors:
-                if (
-                    0 <= y < self._height
-                    and 0 <= x < self._width
-                    and (y, x) in self._maze
-                ):
-                    heapq.heappush(queue, (d + 1, (y, x)))
-        self._loop = visited
-        return last_d
-
-    def part2(self):
-        """
-        >>> Day10(SAMPLE_INPUT_3).part2()
-        4
-        >>> Day10(SAMPLE_INPUT_4).part2()
-        4
-        >>> Day10(SAMPLE_INPUT_5).part2()
-        8
-        >>> Day10(SAMPLE_INPUT_6).part2()
-        10
-        """
-        if self._loop is None:
-            self.part1()
-        visited = set()
-        for position in itertools.chain(
-            ((0, x) for x in range(self._width + 1)),
-            ((y, 0) for y in range(self._height + 1)),
-            ((self._height, x) for x in range(self._width + 1)),
-            ((y, self._width) for y in range(self._height + 1)),
-        ):
-            stack = [position]
-            while stack:
-                position = stack.pop()
-                if position in visited:
-                    continue
-                visited.add(position)
-                y, x = position
-                ul = (
-                    self._maze.get((y - 1, x - 1), ".")
-                    if (y - 1, x - 1) in self._loop
-                    else "."
-                )
-                ur = (
-                    self._maze.get((y - 1, x), ".") if (y - 1, x) in self._loop else "."
-                )
-                dl = (
-                    self._maze.get((y, x - 1), ".") if (y, x - 1) in self._loop else "."
-                )
-                dr = self._maze.get((y, x), ".") if (y, x) in self._loop else "."
-                if y > 0 and ul in "|J7." and ur in "|LF.":
-                    stack.append((y - 1, x))
-                if x > 0 and ul in "-LJ." and dl in "-7F.":
-                    stack.append((y, x - 1))
-                if y < self._height and dl in "|J7." and dr in "|LF.":
-                    stack.append((y + 1, x))
-                if x < self._width and ur in "-LJ." and dr in "-7F.":
-                    stack.append((y, x + 1))
-        visited = {(y, x) for y, x in visited if (y, x + 1) in visited}
-        visited = {(y, x) for y, x in visited if (y + 1, x) in visited}
-        assert not visited.intersection(self._loop)
-        return self._width * self._height - len(self._loop) - len(visited)
+            visited.add(position)
+            y, x = position
+            ul = maze.get((y - 1, x - 1), ".") if (y - 1, x - 1) in loop else "."
+            ur = maze.get((y - 1, x), ".") if (y - 1, x) in loop else "."
+            dl = maze.get((y, x - 1), ".") if (y, x - 1) in loop else "."
+            dr = maze.get((y, x), ".") if (y, x) in loop else "."
+            if y > 0 and ul in "|J7." and ur in "|LF.":
+                stack.append((y - 1, x))
+            if x > 0 and ul in "-LJ." and dl in "-7F.":
+                stack.append((y, x - 1))
+            if y < height and dl in "|J7." and dr in "|LF.":
+                stack.append((y + 1, x))
+            if x < width and ur in "-LJ." and dr in "-7F.":
+                stack.append((y, x + 1))
+    visited = {(y, x) for y, x in visited if (y, x + 1) in visited}
+    visited = {(y, x) for y, x in visited if (y + 1, x) in visited}
+    assert not visited.intersection(loop)
+    return width * height - len(loop) - len(visited)
 
 
-parts = (lambda data: Day10(data).part1(), lambda data: Day10(data).part2())
+parts = (part1, part2)
