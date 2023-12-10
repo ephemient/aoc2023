@@ -2,8 +2,7 @@
 Day 10: Pipe Maze
 """
 
-import heapq
-import itertools
+from enum import Enum
 
 (
     SAMPLE_INPUT_1,
@@ -75,55 +74,79 @@ L7JLJL-JLJLJL--JLJ.L
 """,
 )
 
-_DIRECTIONS = {
-    "|": "ud",
-    "-": "lr",
-    "L": "ur",
-    "J": "ul",
-    "7": "ld",
-    "F": "rd",
-    "S": "udlr",
+
+class Direction(Enum):
+    """
+    Cardinal direction.
+    """
+
+    U = "up"
+    L = "left"
+    D = "down"
+    R = "right"
+
+    def move(self, pos):
+        """
+        Move a point by one step in this direction.
+        """
+        y, x = pos
+        match self:
+            case Direction.U:
+                return y - 1, x
+            case Direction.L:
+                return y, x - 1
+            case Direction.D:
+                return y + 1, x
+            case Direction.R:
+                return y, x + 1
+
+    def __neg__(self):
+        match self:
+            case Direction.U:
+                return Direction.D
+            case Direction.L:
+                return Direction.R
+            case Direction.D:
+                return Direction.U
+            case Direction.R:
+                return Direction.L
+
+
+_SYMBOLS = {
+    "|": (Direction.U, Direction.D),
+    "-": (Direction.L, Direction.R),
+    "L": (Direction.U, Direction.R),
+    "J": (Direction.U, Direction.L),
+    "7": (Direction.L, Direction.D),
+    "F": (Direction.D, Direction.R),
 }
 
 
-def _parse(data):
-    maze = data.splitlines()
-    return (
-        {
-            (y, x): c
-            for y, line in enumerate(maze)
-            for x, c in enumerate(line)
-            if c in _DIRECTIONS
-        },
-        max(len(line) for line in maze),
-        len(maze),
-    )
-
-
-def _part1(maze, width, height):
-    (start,) = (position for position, c in maze.items() if c == "S")
-    queue, last_d, visited = [(0, start)], -1, set()
-    while queue:
-        d, (y, x) = heapq.heappop(queue)
-        if (y, x) in visited or (y, x) not in maze:
-            continue
-        visited.add((y, x))
-        last_d = d
-        directions, neighbors = _DIRECTIONS[maze[(y, x)]], []
-        for direction in directions:
-            match direction:
-                case "u":
-                    neighbors.append((y - 1, x))
-                case "l":
-                    neighbors.append((y, x - 1))
-                case "d":
-                    neighbors.append((y + 1, x))
-                case "r":
-                    neighbors.append((y, x + 1))
-        for y, x in neighbors:
-            if 0 <= y < height and 0 <= x < width and (y, x) in maze:
-                heapq.heappush(queue, (d + 1, (y, x)))
-    return last_d, visited
+def _part1(maze):
+    for y, line in enumerate(maze):
+        for x, char in enumerate(line):
+            if char != "S":
+                continue
+            start_pos = y, x
+            for start_dir in Direction:
+                pos = start_dir.move(start_pos)
+                last_dir = -start_dir
+                path = [start_pos]
+                while pos != start_pos:
+                    y, x = pos
+                    try:
+                        char = maze[y][x]
+                    except IndexError:
+                        break
+                    dirs = _SYMBOLS.get(char, ())
+                    if last_dir not in dirs:
+                        break
+                    path.append(pos)
+                    (next_dir,) = (d for d in dirs if d != last_dir)
+                    pos = next_dir.move(pos)
+                    last_dir = -next_dir
+                else:
+                    return start_pos, (start_dir, last_dir), path
 
 
 def part1(data):
@@ -133,9 +156,7 @@ def part1(data):
     >>> part1(SAMPLE_INPUT_2)
     8
     """
-    maze, width, height = _parse(data)
-    last_d, _ = _part1(maze, width, height)
-    return last_d
+    return len(_part1(data.splitlines())[2]) // 2
 
 
 def part2(data):
@@ -149,38 +170,22 @@ def part2(data):
     >>> part2(SAMPLE_INPUT_6)
     10
     """
-    maze, width, height = _parse(data)
-    _, loop = _part1(maze, width, height)
-    visited = set()
-    for position in itertools.chain(
-        ((0, x) for x in range(width + 1)),
-        ((y, 0) for y in range(height + 1)),
-        ((height, x) for x in range(width + 1)),
-        ((y, width) for y in range(height + 1)),
-    ):
-        stack = [position]
-        while stack:
-            position = stack.pop()
-            if position in visited:
-                continue
-            visited.add(position)
-            y, x = position
-            ul = maze.get((y - 1, x - 1), ".") if (y - 1, x - 1) in loop else "."
-            ur = maze.get((y - 1, x), ".") if (y - 1, x) in loop else "."
-            dl = maze.get((y, x - 1), ".") if (y, x - 1) in loop else "."
-            dr = maze.get((y, x), ".") if (y, x) in loop else "."
-            if y > 0 and ul in "|J7." and ur in "|LF.":
-                stack.append((y - 1, x))
-            if x > 0 and ul in "-LJ." and dl in "-7F.":
-                stack.append((y, x - 1))
-            if y < height and dl in "|J7." and dr in "|LF.":
-                stack.append((y + 1, x))
-            if x < width and ur in "-LJ." and dr in "-7F.":
-                stack.append((y, x + 1))
-    visited = {(y, x) for y, x in visited if (y, x + 1) in visited}
-    visited = {(y, x) for y, x in visited if (y + 1, x) in visited}
-    assert not visited.intersection(loop)
-    return width * height - len(loop) - len(visited)
+    maze = data.splitlines()
+    start_pos, start_dirs, path = _part1(maze)
+    path = sorted(path)
+    count, up, down, path_index = 0, False, False, 0
+    for y, line in enumerate(maze):
+        for x, char in enumerate(line):
+            if path_index < len(path) and path[path_index] == (y, x):
+                dirs = start_dirs if start_pos == (y, x) else _SYMBOLS[char]
+                path_index += 1
+                up ^= Direction.U in dirs
+                down ^= Direction.D in dirs
+            else:
+                if up and down:
+                    count += 1
+                assert up == down
+    return count
 
 
 parts = (part1, part2)
