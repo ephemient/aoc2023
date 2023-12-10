@@ -1,4 +1,4 @@
-use aoc2023::{day1, day2, day3, day4, day5, day6, day7, day8, day9};
+use aoc2023::{day1, day10, day2, day3, day4, day5, day6, day7, day8, day9};
 use std::collections::HashSet;
 use std::env;
 use std::fs;
@@ -17,74 +17,82 @@ fn main() -> io::Result<()> {
     let args = env::args().skip(1).collect::<HashSet<_>>();
 
     if args.is_empty() || args.contains("1") {
-        let data = get_day_input(1)?;
         println!("Day 1");
+        let data = get_day_input(1)?;
         println!("{:?}", day1::part1(&data));
         println!("{:?}", day1::part2(&data));
         println!();
     }
 
     if args.is_empty() || args.contains("2") {
-        let data = get_day_input(2)?;
         println!("Day 2");
+        let data = get_day_input(2)?;
         println!("{:?}", day2::part1(&data));
         println!("{:?}", day2::part2(&data));
         println!();
     }
 
     if args.is_empty() || args.contains("3") {
-        let data = get_day_input(3)?;
         println!("Day 3");
+        let data = get_day_input(3)?;
         println!("{:?}", day3::part1(&data));
         println!("{:?}", day3::part2(&data));
         println!();
     }
 
     if args.is_empty() || args.contains("4") {
-        let data = get_day_input(4)?;
         println!("Day 4");
+        let data = get_day_input(4)?;
         println!("{:?}", day4::part1(&data));
         println!("{:?}", day4::part2(&data));
         println!();
     }
 
     if args.is_empty() || args.contains("5") {
-        let data = get_day_input(5)?;
         println!("Day 5");
+        let data = get_day_input(5)?;
         println!("{:?}", day5::part1(&data).expect("error"));
         println!("{:?}", day5::part2(&data).expect("error"));
         println!();
     }
 
     if args.is_empty() || args.contains("6") {
-        let data = get_day_input(6)?;
         println!("Day 6");
+        let data = get_day_input(6)?;
         println!("{:?}", day6::part1(&data));
         println!("{:?}", day6::part2(&data).expect("error"));
         println!();
     }
 
     if args.is_empty() || args.contains("7") {
-        let data = get_day_input(7)?;
         println!("Day 7");
+        let data = get_day_input(7)?;
         println!("{:?}", day7::part1(&data));
         println!("{:?}", day7::part2(&data));
         println!();
     }
 
     if args.is_empty() || args.contains("8") {
-        let data = get_day_input(8)?;
         println!("Day 8");
+        let data = get_day_input(8)?;
         println!("{:?}", day8::part1(&data).expect("error"));
         println!("{:?}", day8::part2(&data).expect("error"));
         println!();
     }
 
     if args.is_empty() || args.contains("9") {
-        let data = get_day_input(9)?;
         println!("Day 9");
+        let data = get_day_input(9)?;
         println!("{:?}", day9::part1(&data));
         println!("{:?}", day9::part2(&data));
+        println!();
+    }
+
+    if args.is_empty() || args.contains("10") {
+        println!("Day 10");
+        let data = get_day_input(10)?;
+        println!("{:?}", day10::part1(&data).expect("error"));
+        println!("{:?}", day10::part2(&data).expect("error"));
         println!();
     }
 
