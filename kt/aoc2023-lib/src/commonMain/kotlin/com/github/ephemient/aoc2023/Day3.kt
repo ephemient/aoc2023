@@ -1,7 +1,7 @@
 package com.github.ephemient.aoc2023
 
 class Day3(input: String) {
-    private val parts: Map<Pair<Int, Int>, List<Int>> = mutableMapOf<Pair<Int, Int>, MutableList<Int>>().apply {
+    private val parts: Map<IntPair, List<Int>> = mutableMapOf<IntPair, MutableList<Int>>().apply {
         val lines = input.trimEnd().lines()
         for ((y, line) in lines.withIndex()) {
             for (match in NUMBER.findAll(line)) {
