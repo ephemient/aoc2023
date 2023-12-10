@@ -8,11 +8,11 @@ import Test.Hspec (Spec, describe, it, shouldBe)
 
 example1, example2, example3, example4, example5, example6 :: Text
 example1 = T.unlines
-  [ "....."
-  , ".S-7."
-  , ".|.|."
-  , ".L-J."
-  , "....."
+  [ "-L|F7"
+  , "7S-7|"
+  , "L|7||"
+  , "-L-J|"
+  , "L|-JF"
   ]
 example2 = T.unlines
   [ "7-F7-"

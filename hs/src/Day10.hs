@@ -5,7 +5,8 @@ Description:    <https://adventofcode.com/2023/day/10 Day 10: Pipe Maze>
 {-# LANGUAGE ViewPatterns #-}
 module Day10 (solve) where
 
-import Control.Arrow ((***), first, second)
+import Control.Arrow (first, second)
+import Control.Monad (ap)
 import Data.Heap (FstMinPolicy, Heap)
 import qualified Data.Heap as Heap (insert, singleton, view)
 import Data.List (foldl')
@@ -34,10 +35,8 @@ solve input = trace debug (part1, part2) where
     [start] = [(y, x) | y <- [0..height - 1], x <- [0..width - 1], maze ! (y, x) == 'S']
     (loop, part1) = bfs Set.empty 0 $ Heap.singleton @FstMinPolicy (0, start)
 
-    outside = fill `Set.intersection`
-        Set.mapMonotonic (first pred) fill `Set.intersection`
-        Set.mapMonotonic (second pred) fill `Set.intersection`
-        Set.mapMonotonic (pred *** pred) fill
+    outside = (Set.intersection `ap` Set.mapMonotonic (first pred)) $
+        (Set.intersection `ap` Set.mapMonotonic (second pred)) fill
     part2 = width * height - Set.size loop - Set.size outside
 
     bfs visited k (Heap.view -> Just ((d, (y, x)), rest))
