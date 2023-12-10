@@ -1,8 +1,8 @@
 use static_init::dynamic;
 use std::collections::BTreeMap;
-use std::ops::Neg;
+use std::iter;
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
 enum Direction {
     U,
     L,
@@ -10,34 +10,25 @@ enum Direction {
     R,
 }
 
-impl Neg for Direction {
-    type Output = Direction;
-
-    fn neg(self) -> Self::Output {
-        match self {
-            Direction::U => Direction::D,
-            Direction::L => Direction::R,
-            Direction::D => Direction::U,
-            Direction::R => Direction::L,
-        }
-    }
-}
-
 #[dynamic]
-static SYMBOLS: BTreeMap<char, [Direction; 2]> = [
-    ('|', [Direction::U, Direction::D]),
-    ('-', [Direction::L, Direction::R]),
-    ('L', [Direction::U, Direction::R]),
-    ('J', [Direction::U, Direction::L]),
-    ('7', [Direction::L, Direction::D]),
-    ('F', [Direction::D, Direction::R]),
+static LUT: BTreeMap<(Direction, char), Direction> = [
+    ((Direction::U, '|'), Direction::U),
+    ((Direction::U, '7'), Direction::L),
+    ((Direction::U, 'F'), Direction::R),
+    ((Direction::L, '-'), Direction::L),
+    ((Direction::L, 'F'), Direction::D),
+    ((Direction::L, 'L'), Direction::U),
+    ((Direction::D, '|'), Direction::D),
+    ((Direction::D, 'L'), Direction::R),
+    ((Direction::D, 'J'), Direction::L),
+    ((Direction::R, '-'), Direction::R),
+    ((Direction::R, 'J'), Direction::U),
+    ((Direction::R, '7'), Direction::D),
 ]
 .into_iter()
 .collect();
 
-type Position = (usize, usize);
-
-fn step(dir: Direction, (y, x): Position) -> Option<Position> {
+fn step((y, x): (usize, usize), dir: Direction) -> Option<(usize, usize)> {
     Some(match dir {
         Direction::U => (y.checked_sub(1)?, x),
         Direction::L => (y, x.checked_sub(1)?),
@@ -46,42 +37,26 @@ fn step(dir: Direction, (y, x): Position) -> Option<Position> {
     })
 }
 
-fn part1_helper(maze: &[&str]) -> Option<(Position, [Direction; 2], Vec<Position>)> {
+fn part1_helper(maze: &[&str]) -> Option<Vec<(usize, usize)>> {
     for (y, line) in maze.iter().enumerate() {
         for (x, char) in line.char_indices() {
             if char != 'S' {
                 continue;
             }
             let start_pos = (y, x);
-            'dir: for start_dir in [Direction::U, Direction::L, Direction::D, Direction::R] {
-                let Some(mut pos) = step(start_dir, start_pos) else {
-                    continue 'dir;
-                };
-                let mut last_dir = -start_dir;
-                let mut path = vec![start_pos];
-                while pos != start_pos {
-                    let Some(dirs) = maze[pos.0..]
-                        .iter()
-                        .next()
-                        .and_then(|line| line[pos.1..].chars().next())
-                        .and_then(|char| SYMBOLS.get(&char))
-                    else {
-                        continue 'dir;
-                    };
-                    if !dirs.iter().any(|&dir| dir == last_dir) {
-                        continue 'dir;
-                    }
-                    let Some(&next_dir) = dirs.iter().find(|&&dir| dir != last_dir) else {
-                        continue 'dir;
-                    };
-                    let Some(next_pos) = step(next_dir, pos) else {
-                        continue 'dir;
-                    };
+            for mut dir in [Direction::U, Direction::L, Direction::D, Direction::R] {
+                let mut pos = start_pos;
+                let mut path = iter::from_fn(|| {
+                    pos = step(pos, dir)?;
+                    dir =
+                        *LUT.get(&(dir, maze[pos.0..].iter().next()?[pos.1..].chars().next()?))?;
+                    Some(pos)
+                })
+                .collect::<Vec<_>>();
+                if pos == start_pos && !path.is_empty() {
                     path.push(pos);
-                    pos = next_pos;
-                    last_dir = -next_dir;
+                    return Some(path);
                 }
-                return Some((start_pos, [start_dir, last_dir], path));
             }
         }
     }
@@ -89,45 +64,17 @@ fn part1_helper(maze: &[&str]) -> Option<(Position, [Direction; 2], Vec<Position
 }
 
 pub fn part1(data: &str) -> Option<usize> {
-    Some(part1_helper(&data.lines().collect::<Vec<_>>())?.2.len() / 2)
+    Some(part1_helper(&data.lines().collect::<Vec<_>>())?.len() / 2)
 }
 
 pub fn part2(data: &str) -> Option<usize> {
-    let maze = data.lines().collect::<Vec<_>>();
-    let (start_pos, start_dirs, mut path) = part1_helper(&maze)?;
-    path.sort();
-    Some(
-        maze.iter()
-            .enumerate()
-            .flat_map(|(y, line)| line.char_indices().map(move |(x, char)| ((y, x), char)))
-            .scan(
-                (false, false, path.into_iter().peekable()),
-                |(up, down, iter), (pos, char)| {
-                    if Some(pos) == iter.peek().copied() {
-                        iter.next()?;
-                        for dir in if pos == start_pos {
-                            &start_dirs
-                        } else {
-                            SYMBOLS.get(&char)?
-                        } {
-                            match dir {
-                                Direction::U => *up = !*up,
-                                Direction::D => *down = !*down,
-                                _ => {}
-                            }
-                        }
-                        Some(None)
-                    } else if *up && *down {
-                        Some(Some(()))
-                    } else {
-                        assert!(*up == *down);
-                        Some(None)
-                    }
-                },
-            )
-            .flatten()
-            .count(),
-    )
+    let path = part1_helper(&data.lines().collect::<Vec<_>>())?;
+    let (n, m) = path
+        .iter()
+        .zip(path[1..].iter().chain(path.iter()))
+        .map(|((y0, x0), (y1, x1))| (x0 * y1, x1 * y0))
+        .fold((0, 0), |(a, b), (c, d)| (a + c, b + d));
+    Some((2 + n.max(m) - n.min(m) - path.len()) / 2)
 }
 
 #[cfg(test)]

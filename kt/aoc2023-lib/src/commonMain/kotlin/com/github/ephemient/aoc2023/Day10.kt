@@ -1,11 +1,9 @@
 package com.github.ephemient.aoc2023
 
+import kotlin.math.absoluteValue
+
 class Day10(input: String) {
     private val maze = input.lines()
-    private val height = maze.size
-    private val width = maze.maxOf { it.length }
-    private lateinit var start: IntPair
-    private lateinit var startDirs: List<Direction>
     private lateinit var path: List<IntPair>
 
     @Suppress("NestedBlockDepth")
@@ -13,24 +11,21 @@ class Day10(input: String) {
         for ((y, line) in maze.withIndex()) {
             for ((x, char) in line.withIndex()) {
                 if (char != 'S') continue
-                val start = y to x
-                dir@for (startDir in Direction.entries) {
-                    var pos = start.move(startDir)
-                    var lastDir = -startDir
-                    val path = mutableListOf(start)
-                    while (pos != start) {
-                        val dir = symbols[maze.getOrNull(pos.first)?.getOrNull(pos.second)]
-                            ?.takeIf { lastDir in it }
-                            ?.singleOrNull { it != lastDir }
-                            ?: continue@dir
-                        path += pos
-                        pos = pos.move(dir)
-                        lastDir = -dir
+                val startPos = y to x
+                for (startDir in Direction.entries) {
+                    var pos = startPos
+                    val path = buildList {
+                        var dir = startDir
+                        while (true) {
+                            add(pos)
+                            pos = pos.move(dir)
+                            dir = lut[dir to maze.getOrNull(pos.first)?.getOrNull(pos.second)] ?: break
+                        }
+                    }.toList()
+                    if (pos == startPos) {
+                        this.path = path
+                        return path.size / 2
                     }
-                    this.start = start
-                    this.startDirs = listOf(startDir, lastDir)
-                    this.path = path
-                    return path.size / 2
                 }
             }
         }
@@ -38,29 +33,13 @@ class Day10(input: String) {
         throw IllegalStateException("No loop found")
     }
 
-    @Suppress("NestedBlockDepth")
     fun part2(): Int {
-        if (!::start.isInitialized) part1()
-        val path = path.sortedWith(compareBy(IntPair::first, IntPair::second))
-        var count = 0
-        var up = false
-        var down = false
-        var pathIndex = 0
-        for (y in 0 until height) {
-            for (x in 0 until width) {
-                if (pathIndex < path.size && path[pathIndex].let { it.first == y && it.second == x }) {
-                    pathIndex++
-                    val dirs = if (start.first == y && start.second == x) startDirs else symbols[maze[y][x]]!!
-                    up = up != dirs.contains(Direction.U)
-                    down = down != dirs.contains(Direction.D)
-                } else {
-                    if (up && down) count++
-                    check(up == down)
-                }
-            }
-        }
-        check(!up && !down && pathIndex == path.size)
-        return count
+        if (!::path.isInitialized) part1()
+        return 1 + (
+            path.asSequence().plus(path[0]).zipWithNext { (y0, x0), (y1, x1) ->
+                x0 * y1 - x1 * y0
+            }.sum().absoluteValue - path.size
+            ) / 2
     }
 
     private enum class Direction {
@@ -68,21 +47,20 @@ class Day10(input: String) {
     }
 
     companion object {
-        private val symbols = mapOf(
-            '|' to listOf(Direction.U, Direction.D),
-            '-' to listOf(Direction.L, Direction.R),
-            'L' to listOf(Direction.U, Direction.R),
-            'J' to listOf(Direction.U, Direction.L),
-            '7' to listOf(Direction.L, Direction.D),
-            'F' to listOf(Direction.D, Direction.R),
+        private val lut = mapOf(
+            Direction.U to '|' to Direction.U,
+            Direction.U to '7' to Direction.L,
+            Direction.U to 'F' to Direction.R,
+            Direction.L to '-' to Direction.L,
+            Direction.L to 'F' to Direction.D,
+            Direction.L to 'L' to Direction.U,
+            Direction.D to '|' to Direction.D,
+            Direction.D to 'L' to Direction.R,
+            Direction.D to 'J' to Direction.L,
+            Direction.R to '-' to Direction.R,
+            Direction.R to 'J' to Direction.U,
+            Direction.R to '7' to Direction.D,
         )
-
-        private operator fun Direction.unaryMinus(): Direction = when (this) {
-            Direction.U -> Direction.D
-            Direction.L -> Direction.R
-            Direction.D -> Direction.U
-            Direction.R -> Direction.L
-        }
 
         private fun IntPair.move(dir: Direction) = when (dir) {
             Direction.U -> first - 1 to second
