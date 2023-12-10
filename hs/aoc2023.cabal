@@ -29,7 +29,8 @@ library
         Day6,
         Day7,
         Day8,
-        Day9
+        Day9,
+        Day10
 
     -- Modules included in this library but not exported.
     other-modules:
@@ -40,6 +41,7 @@ library
     build-depends:
         base ^>=4.17.2.0,
         containers ^>=0.6.7,
+        heap ^>=1.0.4,
         megaparsec ^>=9.6.1,
         monad-loops ^>=0.4.3,
         split ^>=0.2.4,
@@ -62,7 +64,8 @@ executable aoc2023
         filepath ^>=1.4.2.2,
         megaparsec ^>=9.6.1,
         text ^>=2.0.1
-    ghc-options:      -threaded -rtsopts "-with-rtsopts=-N"
+    ghc-options:      -no-hs-main -threaded
+    c-sources:        app/cbits/main.c
 
     hs-source-dirs:   app
     default-language: GHC2021
@@ -83,7 +86,8 @@ test-suite aoc2023-test
         Day6Spec,
         Day7Spec,
         Day8Spec,
-        Day9Spec
+        Day9Spec,
+        Day10Spec
     build-depends:
         aoc2023,
         base ^>=4.17.2.0,
@@ -106,4 +110,5 @@ benchmark aoc2023-bench
         criterion ^>= 1.6.3.0,
         filepath ^>=1.4.2.2,
         text ^>=2.0.1
-    ghc-options:      -threaded -rtsopts "-with-rtsopts=-N"
+    ghc-options:      -no-hs-main -threaded
+    c-sources:        bench/cbits/main.c

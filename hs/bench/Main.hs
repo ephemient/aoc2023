@@ -1,6 +1,7 @@
 module Main (main) where
 
-import Criterion.Main (bench, bgroup, defaultMain, env, nf)
+import Control.Arrow ((>>>))
+import Criterion.Main (bench, bgroup, defaultMain, env, envWithCleanup, nf)
 import Data.Foldable (find)
 import Data.Maybe (fromMaybe)
 import Data.Text (Text)
@@ -14,12 +15,19 @@ import qualified Day6 (part1, part2)
 import qualified Day7 (part1, part2)
 import qualified Day8 (part1, part2)
 import qualified Day9 (part1, part2)
-import System.Environment (lookupEnv)
+import qualified Day10 (solve)
+import System.Environment.Blank (getEnv, setEnv, unsetEnv)
 import System.FilePath (combine)
+
+setTrace :: String -> IO (Maybe String)
+setTrace value = getEnv "TRACE" <* setEnv "TRACE" value True
+
+unsetTrace :: Maybe String -> IO ()
+unsetTrace = maybe (unsetEnv "TRACE") (setEnv "TRACE" `flip` True)
 
 getDayInput :: Int -> IO Text
 getDayInput i = do
-    dataDir <- fromMaybe "." . find (not . null) <$> lookupEnv "AOC2023_DATADIR"
+    dataDir <- fromMaybe "." . find (not . null) <$> getEnv "AOC2023_DATADIR"
     TIO.readFile . combine dataDir $ "day" ++ show i ++ ".txt"
 
 main :: IO ()
@@ -59,5 +67,10 @@ main = defaultMain
   , env (getDayInput 9) $ \input -> bgroup "Day 9"
       [ bench "part 1" $ nf Day9.part1 input
       , bench "part 2" $ nf Day9.part2 input
+      ]
+  , envWithCleanup ((,) <$> getDayInput 10 <*> setTrace "0")
+        (unsetTrace . snd) $ fst >>> \input -> bgroup "Day 10"
+          [ bench "part 1" $ nf (fst . Day10.solve) input
+          , bench "part 2" $ nf (snd . Day10.solve) input
       ]
   ]

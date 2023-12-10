@@ -10,9 +10,11 @@ import qualified Day6 (part1, part2)
 import qualified Day7 (part1, part2)
 import qualified Day8 (part1, part2)
 import qualified Day9 (part1, part2)
+import qualified Day10 (solve)
 
 import Control.Monad (ap, when)
 import Data.Foldable (find)
+import Data.Function (on)
 import Data.Maybe (fromMaybe)
 import Data.Text (Text)
 import qualified Data.Text.IO as TIO (putStrLn, readFile)
@@ -48,3 +50,4 @@ main = do
     run 7 print [Day7.part1, Day7.part2]
     run 8 (either (fail . errorBundlePretty) print) [Day8.part1, Day8.part2]
     run 9 (either fail print) [Day9.part1, Day9.part2]
+    run 10 (uncurry ((>>) `on` print)) [Day10.solve]
