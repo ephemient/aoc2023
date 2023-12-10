@@ -93,7 +93,7 @@ jobs:
 
           var providedBenchmarks = $(jq --null-input --compact-output '$ARGS.positional|unique' --args "${names[@]}");
 
-          var providedBenchmarkStore = $(jq --null-input '$ARGS.named|map_values(.[0])' "${jsonargs[@]}");
+          var providedBenchmarkStore = $(jq --null-input '$ARGS.named|map_values(.[0]|sort_by(.benchmark|[split("[.]|(?<!\\d)(?!\\D)|(?<!\\D)(?!\\d)")|map(try tonumber catch .),.]))' "${jsonargs[@]}");
           EOF
       - uses: EndBug/add-and-commit@v9
         with:
