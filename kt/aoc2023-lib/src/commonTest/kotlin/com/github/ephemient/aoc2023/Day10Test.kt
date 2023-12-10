@@ -6,16 +6,16 @@ import kotlin.test.assertEquals
 class Day10Test {
     @Test
     fun part1() {
-        assertEquals(4, Day10(example1, debug = true).part1())
-        assertEquals(8, Day10(example2, debug = true).part1())
+        assertEquals(4, Day10(example1).part1())
+        assertEquals(8, Day10(example2).part1())
     }
 
     @Test
     fun part2() {
-        assertEquals(4, Day10(example3, debug = true).part2())
-        assertEquals(4, Day10(example4, debug = true).part2())
-        assertEquals(8, Day10(example5, debug = true).part2())
-        assertEquals(10, Day10(example6, debug = true).part2())
+        assertEquals(4, Day10(example3).part2())
+        assertEquals(4, Day10(example4).part2())
+        assertEquals(8, Day10(example5).part2())
+        assertEquals(10, Day10(example6).part2())
     }
 
     companion object {
