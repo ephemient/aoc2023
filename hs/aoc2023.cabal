@@ -41,7 +41,6 @@ library
     build-depends:
         base ^>=4.17.2.0,
         containers ^>=0.6.7,
-        heap ^>=1.0.4,
         megaparsec ^>=9.6.1,
         monad-loops ^>=0.4.3,
         split ^>=0.2.4,

@@ -70,7 +70,7 @@ main = defaultMain
       ]
   , envWithCleanup ((,) <$> getDayInput 10 <*> setTrace "0")
         (unsetTrace . snd) $ fst >>> \input -> bgroup "Day 10"
-          [ bench "part 1" $ nf (fst . Day10.solve) input
-          , bench "part 2" $ nf (snd . Day10.solve) input
+          [ bench "part 1" $ nf (fmap fst . Day10.solve) input
+          , bench "part 2" $ nf (fmap snd . Day10.solve) input
       ]
   ]

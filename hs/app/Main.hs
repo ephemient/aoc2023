@@ -50,4 +50,4 @@ main = do
     run 7 print [Day7.part1, Day7.part2]
     run 8 (either (fail . errorBundlePretty) print) [Day8.part1, Day8.part2]
     run 9 (either fail print) [Day9.part1, Day9.part2]
-    run 10 (uncurry ((>>) `on` print)) [Day10.solve]
+    run 10 (maybe (fail "error") $ uncurry ((>>) `on` print)) [Day10.solve]

@@ -72,11 +72,11 @@ spec :: Spec
 spec = do
     describe "part 1" $ do
         it "examples" $ do
-            fst (solve example1) `shouldBe` 4
-            fst (solve example2) `shouldBe` 8
+            fst <$> solve example1 `shouldBe` Just 4
+            fst <$> solve example2 `shouldBe` Just 8
     describe "part 2" $ do
         it "examples" $ do
-            snd (solve example3) `shouldBe` 4
-            snd (solve example4) `shouldBe` 4
-            snd (solve example5) `shouldBe` 8
-            snd (solve example6) `shouldBe` 10
+            snd <$> solve example3 `shouldBe` Just 4
+            snd <$> solve example4 `shouldBe` Just 4
+            snd <$> solve example5 `shouldBe` Just 8
+            snd <$> solve example6 `shouldBe` Just 10
