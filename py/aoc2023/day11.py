@@ -2,8 +2,6 @@
 Day 11: Cosmic Expansion
 """
 
-from bisect import bisect
-
 SAMPLE_INPUT = """
 ...#......
 .......#..
@@ -16,6 +14,18 @@ SAMPLE_INPUT = """
 .......#..
 #...#.....
 """
+
+
+def _solve1(data, n):
+    c = 0
+    for i, a in enumerate(data):
+        if not a:
+            continue
+        d = 0
+        for b in data[i + 1 :]:
+            d += bool(b) or n
+            c += d * a * b
+    return c
 
 
 def part1(data):
@@ -34,30 +44,12 @@ def part2(data, n=1000000):
     8410
     """
     lines = data.splitlines()
-    rows = [y for y, line in enumerate(lines) if "#" not in line]
-    cols = [
-        x
-        for x in range(max(len(line) for line in lines))
-        if all(x >= len(line) or line[x] != "#" for line in lines)
-    ]
-    galaxies = [
-        (y, x)
-        for y, line in enumerate(lines)
-        for x, char in enumerate(line)
-        if char == "#"
-    ]
-    return sum(
-        y1
-        - y0
-        + abs(x1 - x0)
-        + (n - 1)
-        * (
-            bisect(rows, y1)
-            - bisect(rows, y0)
-            + abs(bisect(cols, x1) - bisect(cols, x0))
-        )
-        for i, (y0, x0) in enumerate(galaxies)
-        for y1, x1 in galaxies[i + 1 :]
+    return _solve1([line.count("#") for line in lines], n) + _solve1(
+        [
+            sum(line[x : x + 1] == "#" for line in lines)
+            for x in range(max(len(line) for line in lines))
+        ],
+        n,
     )
 
 
