@@ -16,6 +16,7 @@ import qualified Day7 (part1, part2)
 import qualified Day8 (part1, part2)
 import qualified Day9 (part1, part2)
 import qualified Day10 (solve)
+import qualified Day11 (solve)
 import System.Environment.Blank (getEnv, setEnv, unsetEnv)
 import System.FilePath (combine)
 
@@ -72,5 +73,9 @@ main = defaultMain
         (unsetTrace . snd) $ fst >>> \input -> bgroup "Day 10"
           [ bench "part 1" $ nf (fmap fst . Day10.solve) input
           , bench "part 2" $ nf (fmap snd . Day10.solve) input
+      ]
+  , env (getDayInput 11) $ \input -> bgroup "Day 11"
+      [ bench "part 1" $ nf (Day11.solve 2) input
+      , bench "part 2" $ nf (Day11.solve 1000000) input
       ]
   ]

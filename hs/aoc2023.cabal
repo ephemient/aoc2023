@@ -30,7 +30,8 @@ library
         Day7,
         Day8,
         Day9,
-        Day10
+        Day10,
+        Day11
 
     -- Modules included in this library but not exported.
     other-modules:
@@ -86,7 +87,8 @@ test-suite aoc2023-test
         Day7Spec,
         Day8Spec,
         Day9Spec,
-        Day10Spec
+        Day10Spec,
+        Day11Spec
     build-depends:
         aoc2023,
         base ^>=4.17.2.0,
