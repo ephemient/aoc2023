@@ -14,6 +14,7 @@ class Day12(input: String) {
     }
 
     companion object {
+        @Suppress("ComplexCondition")
         private fun calculate(string: String, runs: List<Int>): Int {
             val arr = runs.subList(0, runs.lastIndex).asReversed().fold(
                 IntArray(string.length) { i ->
@@ -22,7 +23,11 @@ class Day12(input: String) {
                         string.getOrElse(i - 1) { '.' } == '#' ||
                         (i until i + runs.last()).any { string[it] == '.' } ||
                         (i + runs.last() until string.length).any { string[it] == '#' }
-                    ) 0 else 1
+                    ) {
+                        0
+                    } else {
+                        1
+                    }
                 }
             ) { arr, run ->
                 IntArray(string.length) { i ->
@@ -30,7 +35,9 @@ class Day12(input: String) {
                         string.getOrElse(i - 1) { '.' } == '#' ||
                         (i until (i + run).coerceAtMost(string.length)).any { string[it] == '.' } ||
                         string.getOrElse(i + run) { '.' } == '#'
-                    ) return@IntArray 0
+                    ) {
+                        return@IntArray 0
+                    }
                     var acc = 0
                     for (j in i + run + 1 until string.length) {
                         acc += arr[j]
