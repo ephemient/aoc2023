@@ -45,6 +45,7 @@ library
         containers ^>=0.6.7,
         megaparsec ^>=9.6.1,
         monad-loops ^>=0.4.3,
+        mtl ^>=2.2.2,
         parallel ^>=3.2.2.0,
         split ^>=0.2.4,
         text ^>=2.0.1,
