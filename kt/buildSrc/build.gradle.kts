@@ -18,10 +18,6 @@ gradlePlugin {
             id = "com.github.ephemient.aoc2023.kotlin.multiplatform.js.platform"
             implementationClass = "com.github.ephemient.aoc2023.buildsrc.KotlinMultiplatformJsPlatformPlugin"
         }
-        create("KotlinMultiplatformWasmPlatformPlugin") {
-            id = "com.github.ephemient.aoc2023.kotlin.multiplatform.wasm.platform"
-            implementationClass = "com.github.ephemient.aoc2023.buildsrc.KotlinMultiplatformWasmPlatformPlugin"
-        }
     }
 }
 

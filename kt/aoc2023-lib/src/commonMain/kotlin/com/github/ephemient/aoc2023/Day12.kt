@@ -7,9 +7,9 @@ class Day12(input: String) {
         lhs to rhs.split(',').map { it.toIntOrNull() ?: return@mapNotNull null }
     }
 
-    fun part1(): Long = input.sumOf(::calculate)
+    suspend fun part1(): Long = input.parSum(::calculate)
 
-    fun part2(): Long = input.sumOf { (string, runs) ->
+    suspend fun part2(): Long = input.parSum { (string, runs) ->
         calculate(List(5) { string }.joinToString(",") to List(5) { runs }.flatten())
     }
 

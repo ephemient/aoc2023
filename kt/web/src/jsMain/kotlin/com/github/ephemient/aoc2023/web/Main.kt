@@ -2,10 +2,6 @@ package com.github.ephemient.aoc2023.web
 
 import com.github.ephemient.aoc2023.days
 import com.github.ephemient.aoc2023.web.common.DefaultSolver
-import com.github.ephemient.aoc2023.web.common.WasmSolver
-import js.promise.Promise
-import js.promise.await
-import js.promise.catch
 import kotlinx.browser.document
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.SupervisorJob
@@ -23,13 +19,10 @@ import org.w3c.dom.HTMLTextAreaElement
 
 fun main() {
     val solver = try {
-        Promise.resolve(WorkerSolver("worker/worker.js"))
+        WorkerSolver("worker/worker.js")
     } catch (e: dynamic) {
         console.error(e)
-        WasmSolver("wasm/aoc2023-web-wasm-wasm-js.mjs").catch {
-            console.error(it)
-            DefaultSolver
-        }.then { AsyncSolver(it) }
+        DefaultSolver
     }
 
     val daySelect = document.getElementById("day") as HTMLSelectElement
@@ -51,7 +44,7 @@ fun main() {
         job.cancelChildren()
         outputField.clear()
         GlobalScope.launch(job) {
-            for (result in Array(days[index].parts) { async { solver.await().solveDayPart(index, it, input) } }) {
+            for (result in Array(days[index].parts) { async { solver.solveDayPart(index, it, input) } }) {
                 outputField.appendText("${result.await()}\n")
             }
         }

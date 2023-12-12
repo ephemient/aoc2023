@@ -1,5 +1,6 @@
 package com.github.ephemient.aoc2023.web
 
+import com.github.ephemient.aoc2023.web.common.Solver
 import kotlinx.coroutines.suspendCancellableCoroutine
 import web.workers.Worker
 import kotlin.coroutines.resume
@@ -10,7 +11,7 @@ class WorkerSolver(
     private val path: String,
     private val minWorkers: Int = 1,
     private val maxWorkers: Int = minWorkers,
-) : AsyncSolver {
+) : Solver {
     init {
         require(minWorkers in 0..maxWorkers)
     }

@@ -45,6 +45,7 @@ kotlin {
             dependencies {
                 implementation(projects.aoc2023Lib)
                 implementation(libs.kotlinx.benchmark)
+                implementation(libs.kotlinx.coroutines)
             }
         }
 
@@ -59,7 +60,6 @@ kotlin {
                 implementation(libs.kotlin.wrappers.node)
 
                 // Benchmark generation failure without these
-                implementation(libs.kotlinx.coroutines)
                 implementation("io.github.turansky.seskar:seskar-core:2.18.0")
                 implementation("io.github.turansky.seskar:seskar-react:2.18.0")
             }

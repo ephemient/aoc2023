@@ -71,14 +71,3 @@ class KotlinMultiplatformJsPlatformPlugin : Plugin<Project> {
         }
     }
 }
-
-class KotlinMultiplatformWasmPlatformPlugin : Plugin<Project> {
-    override fun apply(target: Project) {
-        target.apply<KotlinMultiplatformBasePlugin>()
-        target.apply<KotlinJsVersionsPlugin>()
-        target.pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
-            val kotlin: KotlinMultiplatformExtension by target.extensions
-            kotlin.wasmJs()
-        }
-    }
-}
