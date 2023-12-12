@@ -12,6 +12,7 @@ import qualified Day8 (part1, part2)
 import qualified Day9 (part1, part2)
 import qualified Day10 (solve)
 import qualified Day11 (solve)
+import qualified Day12 (part1, part2)
 
 import Control.Monad (ap, when)
 import Data.Foldable (find)
@@ -53,3 +54,4 @@ main = do
     run 9 (either fail print) [Day9.part1, Day9.part2]
     run 10 (maybe (fail "error") $ uncurry ((>>) `on` print)) [Day10.solve]
     run 11 print [Day11.solve 2, Day11.solve 1000000]
+    run 12 print [Day12.part1, Day12.part2]
