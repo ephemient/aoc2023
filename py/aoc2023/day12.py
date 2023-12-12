@@ -2,8 +2,6 @@
 Day 12: Hot Springs
 """
 
-from functools import cache
-
 SAMPLE_INPUT = """
 ???.### 1,1,3
 .??..??...?##. 1,1,3
@@ -14,26 +12,31 @@ SAMPLE_INPUT = """
 """
 
 
-def _solve(string, runs):
-    @cache
-    def solve_helper(string, runs):
-        m = sum(runs)
-        if (
-            m < string.count("#")
-            or m > len(string) - string.count(".")
-            or m + len(runs) - 1 > len(string)
-        ):
-            return 0
-        if not string or not runs:
-            return 1
-        m = 0
-        if "." not in string[0 : runs[0]] and not string[runs[0] :].startswith("#"):
-            m += solve_helper(string[runs[0] + 1 :].strip("."), runs[1:])
-        if not string.startswith("#"):
-            m += solve_helper(string[1:], runs)
-        return m
-
-    return solve_helper(string.strip("."), runs)
+def _solve(string: str, runs: list[int]):
+    counts = [
+        i + runs[-1] <= len(string)
+        and string[i - 1 : i] != "#"
+        and "." not in string[i : i + runs[-1]]
+        and "#" not in string[i + runs[-1] :]
+        for i in range(len(string))
+    ]
+    for run in runs[-2::-1]:
+        counts = [
+            i + run < len(string)
+            and string[i - 1 : i] != "#"
+            and "." not in string[i : i + run]
+            and "#" not in string[i + run : i + run + 1]
+            and sum(
+                counts[
+                    i + run + 1 : string.index("#", i + run + 1) + 1
+                    if "#" in string[i + run + 1 :]
+                    else len(string)
+                ]
+            )
+            for i in range(len(string))
+        ]
+    total = sum(counts[: string.index("#") + 1 if "#" in string else len(string)])
+    return total
 
 
 def part1(data):

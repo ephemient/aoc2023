@@ -7,33 +7,39 @@ class Day12(input: String) {
         lhs to rhs.split(',').map { it.toIntOrNull() ?: return@mapNotNull null }
     }
 
-    suspend fun part1(): Long = input.parSum(::calculate)
+    suspend fun part1(): Long = input.parSum { (string, runs) -> calculate(string, runs).toLong() }
 
     suspend fun part2(): Long = input.parSum { (string, runs) ->
-        calculate(List(5) { string }.joinToString(",") to List(5) { runs }.flatten())
+        calculate(List(5) { string }.joinToString(","), List(5) { runs }.flatten()).toLong()
     }
 
     companion object {
-        private fun calculate(input: Pair<String, List<Int>>): Long {
-            val memo = mutableMapOf<Pair<String, List<Int>>, Long>()
-            return DeepRecursiveFunction<Pair<String, List<Int>>, Long> { (string, runs) ->
-                val trimmed = string.trim('.')
-                memo.getOrPut(trimmed to runs) {
-                    val m = runs.sum()
-                    when {
-                        trimmed.count { it == '#' } > m ||
-                            m > trimmed.length - trimmed.count { it == '.' } ||
-                            m + runs.size - 1 > trimmed.length
-                        -> 0
-                        trimmed.isEmpty() || runs.isEmpty() -> 1
-                        else -> if (
-                            trimmed.subSequence(1, runs[0]).all { it != '.' } &&
-                            trimmed.getOrNull(runs[0]) != '#'
-                        ) { callRecursive(trimmed.drop(runs[0] + 1) to runs.subList(1, runs.size)) } else { 0 } +
-                            if (!trimmed.startsWith('#')) { callRecursive(trimmed.drop(1) to runs) } else { 0 }
-                    }
+        private fun calculate(string: String, runs: List<Int>): Int {
+            val arr = runs.subList(0, runs.lastIndex).asReversed().fold(
+                IntArray(string.length) { i ->
+                    if (
+                        i + runs.last() > string.length ||
+                        string.getOrElse(i - 1) { '.' } == '#' ||
+                        (i until i + runs.last()).any { string[it] == '.' } ||
+                        (i + runs.last() until string.length).any { string[it] == '#' }
+                    ) 0 else 1
                 }
-            }(input)
+            ) { arr, run ->
+                IntArray(string.length) { i ->
+                    if (i + run > string.length ||
+                        string.getOrElse(i - 1) { '.' } == '#' ||
+                        (i until (i + run).coerceAtMost(string.length)).any { string[it] == '.' } ||
+                        string.getOrElse(i + run) { '.' } == '#'
+                    ) return@IntArray 0
+                    var acc = 0
+                    for (j in i + run + 1 until string.length) {
+                        acc += arr[j]
+                        if (string[j] == '#') break
+                    }
+                    acc
+                }
+            }
+            return arr.take(string.indexOf('#') + 1).sum()
         }
     }
 }
