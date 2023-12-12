@@ -45,6 +45,7 @@ library
         containers ^>=0.6.7,
         megaparsec ^>=9.6.1,
         monad-loops ^>=0.4.3,
+        parallel ^>=3.2.2.0,
         split ^>=0.2.4,
         text ^>=2.0.1,
         vector ^>=0.13.1.0
@@ -89,7 +90,8 @@ test-suite aoc2023-test
         Day8Spec,
         Day9Spec,
         Day10Spec,
-        Day11Spec
+        Day11Spec,
+        Day12Spec
     build-depends:
         aoc2023,
         base ^>=4.17.2.0,

@@ -6,22 +6,13 @@ Description:    <https://adventofcode.com/2023/day/12 Day 12: Hot Springs>
 module Day12 (part1, part2) where
 
 import Common (readEntire)
+import Control.Parallel.Strategies (parMap, rseq)
 import Data.List (foldl', maximumBy, inits, tails, scanl')
 import Data.Ord (comparing)
 import Data.Text (Text)
 import qualified Data.Text as T (all, any, breakOn, count, drop, dropAround, dropEnd, dropWhile, dropWhileEnd, head, index, intercalate, length, lines, null, split, splitOn, tail, take, unlines, unpack)
 import qualified Data.Text.Read as T (decimal)
 import Debug.Trace (trace)
-
-example :: Text
-example = T.unlines
-  [ "???.### 1,1,3"
-  , ".??..??...?##. 1,1,3"
-  , "?#?#?#?#?#?#?#? 1,3,1,6"
-  , "????.#...#... 4,1,1"
-  , "????.######..#####. 1,6,5"
-  , "?###???????? 3,2,1"
-  ]
 
 choose :: Int -> Int -> Int
 n `choose` r = foldl' f 1 $ zip [1..r] [n, n - 1..] where
@@ -77,7 +68,7 @@ solutions' = solutions'' . T.dropWhile (== '.') where
         (if T.head s == '#' then 0 else solutions' (T.tail s) xs)
 
 part1 :: Text -> Int
-part1 = sum . map part1' . T.lines where
+part1 = sum . parMap rseq part1' . T.lines where
     part1' line
       | [lhs, rhs] <- T.splitOn " " line
       , Right nums <- mapM (readEntire T.decimal) $ T.splitOn "," rhs
@@ -85,7 +76,7 @@ part1 = sum . map part1' . T.lines where
       | otherwise = 0
 
 part2 :: Text -> Int
-part2 = sum . map part2' . T.lines where
+part2 = sum . parMap rseq part2' . T.lines where
     part2' line
       | [lhs, rhs] <- T.splitOn " " line
       , Right nums <- mapM (readEntire T.decimal) $ T.splitOn "," rhs
