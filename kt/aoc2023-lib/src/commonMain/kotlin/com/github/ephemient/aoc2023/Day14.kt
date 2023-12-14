@@ -48,8 +48,8 @@ class Day14(input: String) {
             .tilt().asReversed().transpose()
             .tilt().asReversed().transpose()
 
-        private fun List<String>.load(): Int = onEach(::println).foldIndexed(0) { i, acc, line ->
+        private fun List<String>.load(): Int = foldIndexed(0) { i, acc, line ->
             acc + (size - i) * line.count { it == 'O' }
-        }.also { println() }
+        }
     }
 }
