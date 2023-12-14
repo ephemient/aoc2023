@@ -31,9 +31,7 @@ parts input =
          in ((acc + T.length leading, acc'), number) : numbers acc' trailing
       | otherwise = []
 
-part1 :: Text -> Int
+part1, part2 :: Text -> Int
 part1 = sum . map snd . parts
-
-part2 :: Text -> Int
 part2 = sum . map product . filter ((== 2) . length) .
     Map.elems . Map.fromListWith (++) . map (second (:[])) . parts

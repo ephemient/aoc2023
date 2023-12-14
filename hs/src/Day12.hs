@@ -61,15 +61,13 @@ solutions s xs = evalState (solutions' s xs) Map.empty where
         modify $ Map.insert (s, xs) result
         pure result
 
-part1 :: Text -> Int
+part1, part2 :: Text -> Int
 part1 = sum . parMap rseq part1' . T.lines where
     part1' line
       | [lhs, rhs] <- T.words line
       , Right nums <- mapM (readEntire T.decimal) $ T.split (== ',') rhs
       = solutions lhs nums
       | otherwise = 0
-
-part2 :: Text -> Int
 part2 = sum . parMap rseq part2' . T.lines where
     part2' line
       | [lhs, rhs] <- T.words line
