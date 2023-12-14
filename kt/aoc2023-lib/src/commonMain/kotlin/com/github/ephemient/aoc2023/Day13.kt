@@ -17,16 +17,6 @@ class Day13(input: String) {
     }
 
     companion object {
-        private fun Iterable<String>.transpose(): List<String> = buildList {
-            val strings = this@transpose.filterTo(mutableListOf()) { it.isNotEmpty() }
-            var i = 0
-            while (strings.isNotEmpty()) {
-                add(buildString(strings.size) { for (string in strings) append(string[i]) })
-                i++
-                strings.removeAll { it.length == i }
-            }
-        }
-
         private fun List<String>.findReflection(eq: List<String>.(List<String>) -> Boolean): Int {
             for (i in 1 until lastIndex) {
                 if (subList(0, i).asReversed().eq(subList(i, size))) return i
