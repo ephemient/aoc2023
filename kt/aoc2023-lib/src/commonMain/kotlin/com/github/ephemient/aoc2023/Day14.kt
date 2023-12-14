@@ -15,7 +15,7 @@ class Day14(input: String) {
             state = state.spin()
             val j = cache.getOrPut(state) { i }
             if (i != j) {
-                repeat((N - i) % (i - j)) { state = state.spin() }
+                state = cache.keys.elementAt(j + (N - i) % (i - j))
                 break
             }
         }
