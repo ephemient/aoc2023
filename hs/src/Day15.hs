@@ -14,7 +14,7 @@ import Data.Maybe (fromMaybe)
 import Data.Text (Text)
 import qualified Data.Text as T (foldl', null, span, split, stripPrefix, stripSuffix)
 import qualified Data.Text.Read as T (decimal)
-import GHC.Exts (groupWith, the)
+import GHC.Exts (the)
 
 hash :: Text -> Int
 hash = (.&. 255) . T.foldl' hash' 0 where hash' k c = 17 * (k + ord c)
