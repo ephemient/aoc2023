@@ -6,7 +6,7 @@ class Day15(input: String) {
     fun part1(): Int = input.sumOf { it.hash() }
 
     fun part2(): Int {
-        val buckets = MutableList(256) { mutableMapOf<String, Int>() }
+        val buckets = List(256) { mutableMapOf<String, Int>() }
         for (step in input) {
             val split = step.indexOfAny(splitters)
             val key = step.substring(0 until split)
