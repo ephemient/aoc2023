@@ -34,7 +34,8 @@ library
         Day11,
         Day12,
         Day13,
-        Day14
+        Day14,
+        Day15
 
     -- Modules included in this library but not exported.
     other-modules:
@@ -96,7 +97,8 @@ test-suite aoc2023-test
         Day11Spec,
         Day12Spec,
         Day13Spec,
-        Day14Spec
+        Day14Spec,
+        Day15Spec
     build-depends:
         aoc2023,
         base ^>=4.17.2.0,

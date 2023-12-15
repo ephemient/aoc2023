@@ -15,6 +15,7 @@ import qualified Day11 (solve)
 import qualified Day12 (part1, part2)
 import qualified Day13 (part1, part2)
 import qualified Day14 (part1, part2)
+import qualified Day15 (part1, part2)
 
 import Control.Monad (ap, when)
 import Data.Foldable (find)
@@ -59,3 +60,4 @@ main = do
     run 12 print [Day12.part1, Day12.part2]
     run 13 print [Day13.part1, Day13.part2]
     run 14 print [Day14.part1, Day14.part2]
+    run 15 print [Day15.part1, Day15.part2]
