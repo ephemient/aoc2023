@@ -1,4 +1,5 @@
 use itertools::Itertools;
+use rayon::iter::{ParallelBridge, ParallelIterator};
 
 fn solve<const N: usize>(line: &str) -> Option<usize> {
     let (lhs, rhs) = line.split_once(' ')?;
@@ -64,7 +65,7 @@ pub fn part1(data: &str) -> usize {
 }
 
 pub fn part2(data: &str) -> usize {
-    data.lines().filter_map(solve::<5>).sum()
+    data.lines().par_bridge().filter_map(solve::<5>).sum()
 }
 
 #[cfg(test)]

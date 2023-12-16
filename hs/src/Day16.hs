@@ -5,6 +5,7 @@ Description:    <https://adventofcode.com/2023/day/16 Day 16: The Floor Will Be 
 module Day16 (part1, part2) where
 
 import Control.Arrow (first, second)
+import Control.Parallel.Strategies (parMap, rseq)
 import Data.List (foldl')
 import qualified Data.Set as Set (empty, fromList, insert, member, size, toList)
 import Data.Text (Text)
@@ -49,7 +50,7 @@ part1, part2 :: Text -> Int
 part1 = flip fill ((0, 0), R) . V.fromList . filter (not . T.null) . T.lines
 part2 input
   | V.null v = 0
-  | otherwise = maximum . map (fill v) $
+  | otherwise = maximum . parMap rseq (fill v) $
         [((0, x), D) | x <- [0..T.length (V.head v) - 1]] ++
         [((y, 0), R) | y <- [0..V.length v - 1]] ++
         [((V.length v - 1, x), U) | x <- [0..T.length (V.last v) - 1]] ++

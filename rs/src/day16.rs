@@ -1,3 +1,4 @@
+use rayon::iter::{ParallelBridge, ParallelIterator};
 use static_init::dynamic;
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
@@ -78,6 +79,7 @@ pub fn part2(data: &str) -> Option<usize> {
             (0..data.len()).filter_map(|y| Some((y, data[y].len().checked_sub(1)?, Direction::L))),
         )
         .chain((0..data.last()?.len()).map(|x| (data.len() - 1, x, Direction::U)))
+        .par_bridge()
         .filter_map(|(y, x, d)| fill(&data, y, x, d))
         .max()
 }

@@ -14,7 +14,7 @@ QQQJA 483
 
 
 # pylint: disable=too-many-return-statements
-def _rank(hand: tuple[int]):
+def _rank(hand):
     counts = Counter(x for x in hand if x >= 0).most_common(2)
     count0 = counts[0][1] if counts else 0
     count1 = counts[1][1] if len(counts) > 1 else 0
@@ -34,7 +34,7 @@ def _rank(hand: tuple[int]):
     return 0
 
 
-def _solve(cards: str, data: str):
+def _solve(cards, data):
     hands = [
         (_rank(hand := tuple(map(cards.find, words[0]))), hand, int(words[1]))
         for line in data.splitlines()

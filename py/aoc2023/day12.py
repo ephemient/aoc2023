@@ -2,6 +2,8 @@
 Day 12: Hot Springs
 """
 
+import multiprocessing
+
 SAMPLE_INPUT = """
 ???.### 1,1,3
 .??..??...?##. 1,1,3
@@ -12,7 +14,7 @@ SAMPLE_INPUT = """
 """
 
 
-def _solve(string: str, runs: list[int]):
+def _solve(string, runs):
     counts = [
         i + runs[-1] <= len(string)
         and string[i - 1 : i] != "#"
@@ -51,18 +53,28 @@ def part1(data):
     )
 
 
+def _solve2(words):
+    return _solve(
+        "?".join((words[0],) * 5), tuple(int(run) for run in words[1].split(",")) * 5
+    )
+
+
 def part2(data):
     """
     >>> part2(SAMPLE_INPUT)
     525152
     """
-    return sum(
-        _solve(
-            "?".join((words[0],) * 5), tuple(int(x) for x in words[1].split(",")) * 5
+    with multiprocessing.Pool() as p:
+        return sum(
+            p.imap_unordered(
+                _solve2,
+                (
+                    words
+                    for line in data.splitlines()
+                    if len(words := line.split(maxsplit=1)) == 2
+                ),
+            )
         )
-        for line in data.splitlines()
-        if len(words := line.split(maxsplit=1))
-    )
 
 
 parts = (part1, part2)

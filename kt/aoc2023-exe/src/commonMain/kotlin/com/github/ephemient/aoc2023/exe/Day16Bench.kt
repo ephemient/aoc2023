@@ -18,6 +18,9 @@ class Day16Bench {
     @Benchmark
     fun part1() = Day16(input).part1()
 
+    @Suppress("EXPOSED_FUNCTION_RETURN_TYPE")
     @Benchmark
-    fun part2() = Day16(input).part2()
+    fun part2() = runSuspend {
+        Day16(input).part2()
+    }
 }

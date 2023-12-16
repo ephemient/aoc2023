@@ -1,9 +1,13 @@
 package com.github.ephemient.aoc2023
 
+import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.reduce
+import kotlinx.coroutines.launch
+
 class Day16(input: String) {
     private val input = input.lines().filter { it.isNotEmpty() }
 
-    private fun fill(y: Int, x: Int, d: Direction, todo: MutableSet<Pair<IntPair, Direction>>): Int {
+    private fun fill(y: Int, x: Int, d: Direction): Int {
         val stack = mutableListOf(y to x to d)
         val visited = stack.toMutableSet()
         while (true) {
@@ -13,45 +17,29 @@ class Day16(input: String) {
                 if (p2.first in input.indices && p2.second in input[p2.first].indices) {
                     val next = p2 to d2
                     visited.add(next) && stack.add(next)
-                } else {
-                    todo.remove(p1 to -d1)
                 }
             }
         }
         return visited.mapTo(mutableSetOf()) { it.first }.size
     }
 
-    fun part1(): Int = fill(0, 0, Direction.R, mutableSetOf())
+    fun part1(): Int = fill(0, 0, Direction.R)
 
-    fun part2(): Int {
-        var max = 0
-        val todo = mutableSetOf<Pair<IntPair, Direction>>()
-        for (x in 0..input.first().lastIndex) todo.add(0 to x to Direction.D)
+    suspend fun part2(): Int = channelFlow {
+        for (x in 0..input.first().lastIndex) {
+            launch { send(fill(0, x, Direction.D)) }
+        }
         for ((y, line) in input.withIndex()) {
-            todo.add(y to 0 to Direction.R)
-            todo.add(y to line.lastIndex to Direction.L)
+            launch { send(fill(y, 0, Direction.R)) }
+            launch { send(fill(y, line.lastIndex, Direction.L)) }
         }
-        for (x in 0..input.last().lastIndex) todo.add(input.lastIndex to x to Direction.U)
-        while (true) {
-            val iterator = todo.iterator()
-            if (!iterator.hasNext()) break
-            val (pos, d) = iterator.next()
-            iterator.remove()
-            max = maxOf(max, fill(pos.first, pos.second, d, todo))
+        for (x in 0..input.last().lastIndex) {
+            launch { send(fill(input.lastIndex, x, Direction.U)) }
         }
-        return max
-    }
+    }.reduce(::maxOf)
 
     private enum class Direction {
         U, L, D, R,
-        ;
-
-        operator fun unaryMinus(): Direction = when (this) {
-            U -> D
-            L -> R
-            D -> U
-            R -> L
-        }
     }
 
     companion object {

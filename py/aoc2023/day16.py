@@ -2,6 +2,7 @@
 Day 16: The Floor Will Be Lava
 """
 
+import multiprocessing
 from enum import Enum
 from itertools import chain
 
@@ -54,7 +55,7 @@ def _move(y, x, d):
             return y, x + 1
 
 
-def _fill(data: list[str], y: int, x: int, d: _Direction) -> int:
+def _fill(data, y, x, d):
     stack = [(y, x, d)]
     visited = set(stack)
     while stack:
@@ -79,21 +80,36 @@ def part1(data):
     return _fill(list(filter(None, data.splitlines())), 0, 0, _Direction.R)
 
 
+_DATA2 = []
+
+
+def _initializer2(data):
+    _DATA2[:] = data
+
+
+def _fill2(args):
+    y, x, d = args
+    return _fill(_DATA2, y, x, d)
+
+
 def part2(data):
     """
     >>> part2(SAMPLE_INPUT)
     51
     """
     data = list(filter(None, data.splitlines()))
-    return max(
-        _fill(data, y, x, d)
-        for y, x, d in chain(
-            ((y, 0, _Direction.R) for y in range(len(data))),
-            ((0, x, _Direction.D) for x in range(len(data[0]))),
-            ((y, len(data[0]) - 1, _Direction.L) for y in range(len(data))),
-            ((len(data) - 1, x, _Direction.U) for x in range(len(data[-1]))),
+    with multiprocessing.Pool(initializer=_initializer2, initargs=(data,)) as p:
+        return max(
+            p.imap_unordered(
+                _fill2,
+                chain(
+                    ((y, 0, _Direction.R) for y in range(len(data))),
+                    ((0, x, _Direction.D) for x in range(len(data[0]))),
+                    ((y, len(data[0]) - 1, _Direction.L) for y in range(len(data))),
+                    ((len(data) - 1, x, _Direction.U) for x in range(len(data[-1]))),
+                ),
+            )
         )
-    )
 
 
 parts = (part1, part2)
