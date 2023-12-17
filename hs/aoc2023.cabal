@@ -36,7 +36,8 @@ library
         Day13,
         Day14,
         Day15,
-        Day16
+        Day16,
+        Day17
 
     -- Modules included in this library but not exported.
     other-modules:
@@ -47,6 +48,7 @@ library
     build-depends:
         base ^>=4.17.2.0,
         containers ^>=0.6.7,
+        heap ^>=1.0.4,
         megaparsec ^>=9.6.1,
         monad-loops ^>=0.4.3,
         mtl ^>=2.2.2,
@@ -100,7 +102,8 @@ test-suite aoc2023-test
         Day13Spec,
         Day14Spec,
         Day15Spec,
-        Day16Spec
+        Day16Spec,
+        Day17Spec
     build-depends:
         aoc2023,
         base ^>=4.17.2.0,
