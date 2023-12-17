@@ -11,8 +11,7 @@ import Control.Monad.State (MonadState, evalState, execStateT, gets, modify, mod
 import Control.Monad.Trans (lift)
 import Control.Parallel.Strategies (parMap, rseq)
 import Data.List (foldl', maximumBy, inits, tails, scanl')
-import Data.Map (Map)
-import qualified Data.Map as Map (empty, insert, lookup)
+import qualified Data.Map as Map ((!?), empty, insert)
 import Data.Ord (comparing)
 import Data.Text (Text)
 import qualified Data.Text as T (all, any, breakOn, count, drop, dropAround, dropEnd, dropWhile, dropWhileEnd, head, index, intercalate, length, lines, null, split, tail, take, unlines, unpack, words)
@@ -25,7 +24,7 @@ infix 1 `choose`
 
 solutions :: Text -> [Int] -> Int
 solutions s xs = evalState (solutions' s xs) Map.empty where
-    solutions' (T.dropAround (== '.') -> s) xs = gets (Map.lookup (s, xs)) >>= flip maybe pure do
+    solutions' (T.dropAround (== '.') -> s) xs = gets (Map.!? (s, xs)) >>= flip maybe pure do
         let m = sum xs
             x:xs' = xs
             maxRun = maximumBy (comparing T.length) $ T.split (/= '#') s

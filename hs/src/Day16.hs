@@ -6,14 +6,18 @@ module Day16 (part1, part2) where
 
 import Control.Arrow (first, second)
 import Control.Parallel.Strategies (parMap, rseq)
+import qualified Data.HashSet as Set (empty, fromList, insert, member, size, toList)
+import Data.Hashable (Hashable(hashWithSalt), hashUsing)
 import Data.List (foldl')
-import qualified Data.Set as Set (empty, fromList, insert, member, size, toList)
 import Data.Text (Text)
 import qualified Data.Text as T (index, length, lines, null)
 import Data.Vector (Vector)
 import qualified Data.Vector as V ((!), any, fromList, head, last, length, null)
 
-data Direction = U | L | D | R deriving (Eq, Ord, Show)
+data Direction = U | L | D | R deriving (Enum, Eq, Ord, Show)
+
+instance Hashable Direction where
+    hashWithSalt = hashUsing fromEnum
 
 move :: Direction -> (Int, Int) -> (Int, Int)
 move U = first pred

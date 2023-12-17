@@ -6,6 +6,7 @@ module Day3 (part1, part2) where
 
 import Control.Arrow (second)
 import Data.Char (isDigit, isSpace)
+import Data.Foldable (foldl')
 import qualified Data.Map as Map (elems, fromListWith)
 import Data.Text (Text)
 import qualified Data.Text as T (break, index, length, lines, span)
@@ -33,5 +34,6 @@ parts input =
 
 part1, part2 :: Text -> Int
 part1 = sum . map snd . parts
-part2 = sum . map product . filter ((== 2) . length) .
-    Map.elems . Map.fromListWith (++) . map (second (:[])) . parts
+part2 = foldl' f 0 . Map.fromListWith (++) . map (second (:[])) . parts where
+    f k [x, y] = k + x * y
+    f k _ = k

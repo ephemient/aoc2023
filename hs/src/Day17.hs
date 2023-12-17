@@ -7,7 +7,7 @@ module Day17 (part1, part2) where
 
 import Control.Arrow (first, second)
 import Data.Char (digitToInt)
-import qualified Data.HashMap.Strict as HashMap ((!), (!?), insert, singleton)
+import qualified Data.HashMap.Strict as Map ((!), (!?), insert, singleton)
 import Data.Hashable (Hashable(hashWithSalt), hashUsing)
 import Data.Heap (FstMinPolicy, Heap)
 import qualified Data.Heap as Heap (insert, singleton, view)
@@ -38,12 +38,12 @@ parse = V.fromList . map digitsToInts . filter (not . T.null) . T.lines where
 
 solve :: (Int -> Bool) -> (Direction -> Int -> [Direction]) -> Text -> Maybe Int
 solve ok nexts input =
-    bfs (Heap.singleton @FstMinPolicy (0, start)) $ HashMap.singleton start 0 where
+    bfs (Heap.singleton @FstMinPolicy (0, start)) $ Map.singleton start 0 where
     digitsToInts line = UV.generate (T.length line) $ digitToInt . T.index line
     maze = V.fromList . map digitsToInts . filter (not . T.null) $ T.lines input
     start = (0, 0, R, 0)
     bfs (Heap.view -> Just ((prio, state@(y, x, d, n)), q)) costs
-      | costs HashMap.! state < cost = bfs q costs
+      | costs Map.! state < cost = bfs q costs
       | y == V.length maze - 1 && x == UV.length (V.last maze) - 1 && ok n = Just cost
       | otherwise = bfs (foldl' heapInsert q adj) $ foldl' hashMapInsert costs adj
       where
@@ -56,10 +56,10 @@ solve ok nexts input =
           , 0 <= x' && x' < UV.length (maze V.! y')
           , let cost' = cost + maze V.! y' UV.! x'
                 state' = (y', x', d', if d == d' then n + 1 else 1)
-          , maybe True (cost' <) $ costs HashMap.!? state'
+          , maybe True (cost' <) $ costs Map.!? state'
           ]
         heapInsert q' (state'@(y', x', _, _), cost') = Heap.insert (cost' - y' - x', state') q'
-        hashMapInsert costs' (state', cost') = HashMap.insert state' cost' costs'
+        hashMapInsert costs' (state', cost') = Map.insert state' cost' costs'
     bfs _ _ = Nothing
 
 part1, part2 :: Text -> Maybe Int

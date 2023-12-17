@@ -1,4 +1,5 @@
 use num_integer::lcm;
+use rayon::iter::{ParallelBridge, ParallelIterator};
 use std::{collections::BTreeMap, iter};
 
 struct Network<'a> {
@@ -59,16 +60,18 @@ pub fn part2(data: &str) -> Option<usize> {
                 .table
                 .keys()
                 .filter(|node| node.ends_with('A'))
-                .try_fold(1, |acc, &start| {
+                .par_bridge()
+                .map(|&start| {
                     let (i, end) = iter::successors(Some(start), |&node| network.step(node))
                         .enumerate()
                         .find(|(_, node)| node.ends_with('Z'))?;
                     if network.step(start) == network.step(end) {
-                        Some(lcm(acc, i))
+                        Some(i)
                     } else {
                         None
                     }
-                })?,
+                })
+                .try_reduce(|| 1, |x, y| Some(lcm(x, y)))?,
     )
 }
 

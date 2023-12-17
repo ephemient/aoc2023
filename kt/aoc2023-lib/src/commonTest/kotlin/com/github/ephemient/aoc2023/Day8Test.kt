@@ -2,6 +2,7 @@ package com.github.ephemient.aoc2023
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlinx.coroutines.test.runTest
 
 class Day8Test {
     @Test
@@ -11,7 +12,7 @@ class Day8Test {
     }
 
     @Test
-    fun part2() {
+    fun part2() = runTest {
         assertEquals(6, Day8(example3).part2())
     }
 
