@@ -25,17 +25,22 @@ class Day17(input: String) {
         ok: (distance: Int) -> Boolean,
         next: (direction: Direction, distance: Int) -> Iterable<Direction>,
     ): Int? {
-        val visited = mutableSetOf<State>()
+        val start = State(0, 0, Direction.R, 0)
+        val costs = mutableMapOf(start to 0)
         val queue = PriorityQueue<IndexedValue<State>>(compareBy { (cost, state) -> cost - state.y - state.x })
-        queue.add(IndexedValue(0, State(0, 0, Direction.R, 0)))
+        queue.add(IndexedValue(0, start))
         while (!queue.isEmpty()) {
             val (cost, state) = queue.remove()
             if (state.y == input.lastIndex && state.x == input.last().lastIndex && ok(state.distance)) return cost
-            if (!visited.add(state)) continue
+            if (costs.getValue(state) < cost) continue
+            @Suppress("LoopWithTooManyJumpStatements")
             for (direction in next(state.direction, state.distance)) {
                 val newState = state.move(direction)
                 if (newState.y !in input.indices || newState.x !in input[state.y].indices) continue
-                queue.add(IndexedValue(cost + input[newState.y][newState.x].digitToInt(), newState))
+                val newCost = cost + input[newState.y][newState.x].digitToInt()
+                if (costs.getOrElse(newState) { Int.MAX_VALUE } <= newCost) continue
+                costs[newState] = newCost
+                queue.add(IndexedValue(newCost, newState))
             }
         }
         return null

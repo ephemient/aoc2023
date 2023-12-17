@@ -25,8 +25,7 @@ static LUT: BTreeMap<(Direction, char), Direction> = [
     ((Direction::R, 'J'), Direction::U),
     ((Direction::R, '7'), Direction::D),
 ]
-.into_iter()
-.collect();
+.into();
 
 fn step((y, x): (usize, usize), dir: Direction) -> Option<(usize, usize)> {
     Some(match dir {

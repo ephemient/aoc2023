@@ -42,18 +42,18 @@ class _Direction(IntEnum):
         return _Direction((self.value - other) % len(_Direction))
 
 
+# pylint: disable=too-many-locals
 def _solve(data, ok, turns):
     data = [[int(char) for char in line] for line in data.splitlines() if line]
     queue = [(0, (0, 0, _Direction.R, 0))]
-    visited = set()
+    best = {(0, 0, _Direction.R, 0): 0}
     while queue:
         cost, state = heapq.heappop(queue)
         y1, x1, direction1, distance1 = state
         if y1 == len(data) - 1 and x1 == len(data[-1]) - 1 and ok(distance1):
             return cost
-        if state in visited:
+        if cost > best[state]:
             continue
-        visited.add(state)
         for direction2 in turns(direction1, distance1):
             y2, x2 = y1, x1
             match direction2:
@@ -67,10 +67,13 @@ def _solve(data, ok, turns):
                     x2 += 1
             if not (0 <= y2 < len(data) and 0 <= x2 < len(data[y2])):
                 continue
+            cost2 = cost + data[y2][x2]
             distance2 = distance1 + 1 if direction1 == direction2 else 1
-            heapq.heappush(
-                queue, (cost + data[y2][x2], (y2, x2, direction2, distance2))
-            )
+            state2 = (y2, x2, direction2, distance2)
+            if state2 in best and best[state2] <= cost2:
+                continue
+            best[state2] = cost2
+            heapq.heappush(queue, (cost2, state2))
     return None
 
 

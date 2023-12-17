@@ -7,16 +7,20 @@ module Day17 (part1, part2) where
 
 import Control.Arrow (first, second)
 import Data.Char (digitToInt)
+import qualified Data.HashMap.Strict as HashMap ((!), (!?), insert, singleton)
+import Data.Hashable (Hashable(hashWithSalt), hashUsing)
 import Data.Heap (FstMinPolicy, Heap)
 import qualified Data.Heap as Heap (insert, singleton, view)
 import Data.List (foldl')
-import qualified Data.Set as Set (empty, insert, member)
 import Data.Text (Text)
 import qualified Data.Text as T (index, lines, length, null)
 import qualified Data.Vector as V (Vector, (!), fromList, last, length)
 import qualified Data.Vector.Unboxed as UV (Vector, (!), generate, length)
 
 data Direction = U | L | D | R deriving (Bounded, Enum, Eq, Ord, Show)
+
+instance Hashable Direction where
+    hashWithSalt = hashUsing fromEnum
 
 move :: Direction -> (Int, Int) -> (Int, Int)
 move U = first pred
@@ -32,37 +36,39 @@ parse :: Text -> V.Vector (UV.Vector Int)
 parse = V.fromList . map digitsToInts . filter (not . T.null) . T.lines where
     digitsToInts line = UV.generate (T.length line) $ digitToInt . T.index line
 
+solve :: (Int -> Bool) -> (Direction -> Int -> [Direction]) -> Text -> Maybe Int
+solve ok nexts input =
+    bfs (Heap.singleton @FstMinPolicy (0, start)) $ HashMap.singleton start 0 where
+    digitsToInts line = UV.generate (T.length line) $ digitToInt . T.index line
+    maze = V.fromList . map digitsToInts . filter (not . T.null) $ T.lines input
+    start = (0, 0, R, 0)
+    bfs (Heap.view -> Just ((prio, state@(y, x, d, n)), q)) costs
+      | costs HashMap.! state < cost = bfs q costs
+      | y == V.length maze - 1 && x == UV.length (V.last maze) - 1 && ok n = Just cost
+      | otherwise = bfs (foldl' heapInsert q adj) $ foldl' hashMapInsert costs adj
+      where
+        cost = prio + y + x
+        adj =
+          [ (state', cost')
+          | d' <- nexts d n
+          , let (y', x') = move d' (y, x)
+          , 0 <= y' && y' < V.length maze
+          , 0 <= x' && x' < UV.length (maze V.! y')
+          , let cost' = cost + maze V.! y' UV.! x'
+                state' = (y', x', d', if d == d' then n + 1 else 1)
+          , maybe True (cost' <) $ costs HashMap.!? state'
+          ]
+        heapInsert q' (state'@(y', x', _, _), cost') = Heap.insert (cost' - y' - x', state') q'
+        hashMapInsert costs' (state', cost') = HashMap.insert state' cost' costs'
+    bfs _ _ = Nothing
+
 part1, part2 :: Text -> Maybe Int
-part1 input = bfs (Heap.singleton @FstMinPolicy (0, (0, 0, R, 0))) Set.empty where
-    maze = parse input
-    bfs (Heap.view -> Just ((k, state@(y, x, d, n)), q)) visited
-      | Set.member state visited = bfs q visited
-      | y == V.length maze - 1 && x == UV.length (V.last maze) - 1 = Just $ k + y + x
-      | otherwise = bfs (foldl' (flip Heap.insert) q next) $ Set.insert state visited
-      where
-        next =
-          [ (k + maze V.! y' UV.! x' + y - y' + x - x', (y', x', d', n'))
-          | (d', n') <- (pred' d, 1) : (succ' d, 1) : [(d, n + 1) | n < 3]
-          , let (y', x') = move d' (y, x)
-          , 0 <= y' && y' < V.length maze
-          , 0 <= x' && x' < UV.length (maze V.! y')
-          ]
-    bfs _ _ = Nothing
-part2 input = bfs (Heap.singleton @FstMinPolicy (0, (0, 0, R, 0))) Set.empty where
-    maze = parse input
-    bfs (Heap.view -> Just ((k, state@(y, x, d, n)), q)) visited
-      | Set.member state visited = bfs q visited
-      | y == V.length maze - 1 && x == UV.length (V.last maze) - 1 && n >= 4 = Just $ k + y + x
-      | otherwise = bfs (foldl' (flip Heap.insert) q next) $ Set.insert state visited
-      where
-        next =
-          [ (k + maze V.! y' UV.! x' + y - y' + x - x', (y', x', d', n'))
-          | (d', n') <-
-                [(pred' d, 1) | n >= 4] ++
-                [(succ' d, 1) | n >= 4] ++
-                [(d, n + 1) | n < 10]
-          , let (y', x') = move d' (y, x)
-          , 0 <= y' && y' < V.length maze
-          , 0 <= x' && x' < UV.length (maze V.! y')
-          ]
-    bfs _ _ = Nothing
+part1 = solve (const True) nexts where
+    nexts d n
+      | n < 3 = [pred' d, succ' d, d]
+      | otherwise = [pred' d, succ' d]
+part2 = solve (>= 4) nexts where
+    nexts d n
+      | n < 4 = [d]
+      | n < 10 = [pred' d, succ' d, d]
+      | otherwise = [pred' d, succ' d]

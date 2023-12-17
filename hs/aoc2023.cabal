@@ -48,6 +48,7 @@ library
     build-depends:
         base ^>=4.17.2.0,
         containers ^>=0.6.7,
+        hashable ^>=1.4.3.0,
         heap ^>=1.0.4,
         megaparsec ^>=9.6.1,
         monad-loops ^>=0.4.3,
@@ -55,6 +56,7 @@ library
         parallel ^>=3.2.2.0,
         split ^>=0.2.4,
         text ^>=2.0.1,
+        unordered-containers ^>=0.2.19.1,
         vector ^>=0.13.1.0
     hs-source-dirs:   src
     default-language: GHC2021

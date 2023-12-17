@@ -1,5 +1,5 @@
 use std::cmp::Reverse;
-use std::collections::{BinaryHeap, HashSet};
+use std::collections::{BinaryHeap, HashMap};
 
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 enum Direction {
@@ -52,14 +52,26 @@ where
                 .collect::<Option<Vec<_>>>()
         })
         .collect::<Vec<_>>();
-    let mut queue: BinaryHeap<_> = [(Reverse(0), (0, 0, Direction::R, 0))].into();
-    let mut visited = HashSet::new();
-    while let Some((Reverse(cost), state @ (y, x, direction, distance))) = queue.pop() {
+    let mut queue: BinaryHeap<_> = [(Reverse(0), 0, 0, Direction::R, 0)].into();
+    let mut costs: HashMap<_, _> = [((0, 0, Direction::R, 0), 0)].into();
+    while let Some((Reverse(cost), y, x, direction @ direction0, distance)) = queue.pop() {
+        let cost = cost + y + x;
         if y == maze.len() - 1 && x == maze[y].len() - 1 && ok(distance) {
             return Some(cost);
         }
-        if !visited.insert(state) {
-            continue;
+        match costs.entry((y, x, direction, distance)) {
+            std::collections::hash_map::Entry::Occupied(entry) => {
+                if *entry.get() < cost {
+                    continue;
+                }
+            }
+            std::collections::hash_map::Entry::Vacant(_) => {
+                #[cfg(debug_assertions)]
+                panic!(
+                    "missing state for ({}, {}, {}, {:?}, {})",
+                    cost, y, x, direction, distance
+                );
+            }
         }
         for direction in next(direction, distance) {
             let direction = direction.into();
@@ -68,19 +80,24 @@ where
             else {
                 continue;
             };
-            queue.push((
-                Reverse(cost + maze[y][x] as usize),
-                (
-                    y,
-                    x,
-                    direction,
-                    if direction == state.2 {
-                        distance + 1
-                    } else {
-                        1
-                    },
-                ),
-            ));
+            let distance = if direction == direction0 {
+                distance + 1
+            } else {
+                1
+            };
+            let cost = cost + maze[y][x] as usize;
+            match costs.entry((y, x, direction, distance)) {
+                std::collections::hash_map::Entry::Occupied(mut entry) => {
+                    if *entry.get() <= cost {
+                        continue;
+                    }
+                    entry.insert(cost);
+                }
+                std::collections::hash_map::Entry::Vacant(entry) => {
+                    entry.insert(cost);
+                }
+            }
+            queue.push((Reverse(cost - y - x), y, x, direction, distance));
         }
     }
     None
