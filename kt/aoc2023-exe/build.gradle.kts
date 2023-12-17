@@ -84,8 +84,9 @@ benchmark {
         getByName("main") {
             warmups = 1
             iterationTime = 1
-            iterationTimeUnit = "SECONDS"
-            outputTimeUnit = "SECONDS"
+            iterationTimeUnit = "s"
+            mode = "avgt"
+            outputTimeUnit = "us"
             val benchmarkInclude: String? by project
             val benchmarkExclude: String? by project
             benchmarkInclude?.let(::include)
