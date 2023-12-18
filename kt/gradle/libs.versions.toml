@@ -7,7 +7,7 @@ kotlin = "1.9.21"
 kotlinx-benchmark = "0.4.10"
 kotlinx-coroutines = "1.7.3"
 kotlinx-html = "0.10.1"
-okio = "3.6.0"
+okio = "3.7.0"
 native-image-plugin = "0.9.28"
 
 [plugins]
