@@ -150,16 +150,13 @@ fn part2_helper(rules: &HashMap<&str, Rule>, name: &str, bounds: Point<(u32, u32
                 else {
                     return Some(0);
                 };
-                match ordering {
-                    Ordering::Less => {
-                        *hi0 = min(*hi0, value - 1);
-                        *lo1 = max(*lo1, value);
-                    }
-                    Ordering::Greater => {
-                        *lo0 = max(*lo0, value + 1);
-                        *hi1 = min(*hi1, value);
-                    }
-                    Ordering::Equal => panic!(),
+                if ordering < Ordering::Greater {
+                    *hi0 = min(*hi0, value - 1);
+                    *lo1 = max(*lo1, value);
+                }
+                if ordering > Ordering::Less {
+                    *lo0 = max(*lo0, value + 1);
+                    *hi1 = min(*hi1, value);
                 }
                 if lo1 > hi1 {
                     *st = None;
