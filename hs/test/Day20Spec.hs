@@ -3,13 +3,12 @@ module Day20Spec (spec) where
 
 import Data.Text (Text)
 import qualified Data.Text as T (unlines)
-import Day20 (part1)
+import Day20 (part1, part2)
 import Test.Hspec (Spec, describe, it, pendingWith, shouldBe)
 
 example1, example2 :: Text
 example1 = T.unlines
-  [ -- :r!wl-paste | sed 's/.*/  , "&"/;1s/,/ /'
-    "broadcaster -> a, b, c"
+  [ "broadcaster -> a, b, c"
   , "%a -> b"
   , "%b -> c"
   , "%c -> inv"
@@ -32,3 +31,4 @@ spec = do
     describe "part 2" $ do
         it "examples" $ do
             pendingWith "No examples provided"
+            part2 "" `shouldBe` Right (Just undefined)

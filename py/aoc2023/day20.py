@@ -141,7 +141,7 @@ def _loop(machines, dst):
 
 def part2(data):
     """
-    >>> # part2(SAMPLE_INPUT)
+    >>> part2(SAMPLE_INPUT) # doctest: +SKIP
     """
     machines, dependencies = _parse(data)
     if machines.get("broadcast", (None,))[0] is not None:
