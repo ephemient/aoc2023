@@ -41,6 +41,7 @@ day16 = "aoc2023.day16:parts"
 day17 = "aoc2023.day17:parts"
 day18 = "aoc2023.day18:parts"
 day19 = "aoc2023.day19:parts"
+day20 = "aoc2023.day20:parts"
 
 [tool.black]
 target_version = ["py312"]
