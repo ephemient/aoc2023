@@ -20,6 +20,7 @@ val days = listOf(
     Day(17, ::Day17, Day17::part1, Day17::part2),
     Day(18, ::Day18, Day18::part1, Day18::part2),
     Day(19, ::Day19, Day19::part1, Day19::part2),
+    Day(20, ::Day20, Day20::part1, Day20::part2),
 )
 
 data class Day(
