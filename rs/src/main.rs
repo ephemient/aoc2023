@@ -1,6 +1,6 @@
 use aoc2023::{
-    day1, day10, day11, day12, day13, day14, day15, day16, day17, day18, day19, day2, day3, day4,
-    day5, day6, day7, day8, day9,
+    day1, day10, day11, day12, day13, day14, day15, day16, day17, day18, day19, day2, day20, day3,
+    day4, day5, day6, day7, day8, day9,
 };
 use std::collections::HashSet;
 use std::env;
@@ -168,6 +168,14 @@ fn main() -> io::Result<()> {
         let data = get_day_input(19)?;
         println!("{:?}", day19::part1(&data));
         println!("{:?}", day19::part2(&data));
+        println!();
+    }
+
+    if args.is_empty() || args.contains("20") {
+        println!("Day 20");
+        let data = get_day_input(20)?;
+        println!("{:?}", day20::part1(&data).expect("error"));
+        println!("{:?}", day20::part2(&data).expect("error"));
         println!();
     }
 
