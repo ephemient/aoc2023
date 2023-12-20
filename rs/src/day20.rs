@@ -86,7 +86,7 @@ pub fn part1(data: &str) -> Option<u32> {
         .collect::<HashMap<_, _>>();
     let (mut x, mut y) = (0, 0);
     for _ in 0..1000 {
-        let mut queue: VecDeque<_> = [("button", "broadcaster", false)].into();
+        let mut queue = VecDeque::from([("button", "broadcaster", false)]);
         while let Some((src, key, value)) = queue.pop_front() {
             if value {
                 x += 1;
@@ -161,15 +161,11 @@ pub fn part2(data: &str) -> Option<usize> {
                 .collect::<Vec<_>>();
             snapshot.sort_by(|(a, _), (b, _)| a.cmp(b));
             let i = seen.len();
-            match seen.entry(snapshot) {
-                std::collections::hash_map::Entry::Occupied(entry) => {
-                    break Some(i - *entry.get());
-                }
-                std::collections::hash_map::Entry::Vacant(entry) => {
-                    entry.insert(i);
-                }
+            let j = *seen.entry(snapshot).or_insert(i);
+            if i != j {
+                break i - j;
             }
-            let mut queue: VecDeque<_> = [("button", "broadcaster", false)].into();
+            let mut queue = VecDeque::from([("button", "broadcaster", false)]);
             while let Some((src, key, value)) = queue.pop_front() {
                 let Some(value) = (match state.get_mut(key) {
                     Some(state) => state.pulse(src, value),
@@ -182,7 +178,7 @@ pub fn part2(data: &str) -> Option<usize> {
                 };
                 queue.extend(dsts.intersection(&subset).map(|&dst| (key, dst, value)));
             }
-        }?;
+        };
         Some(lcm(acc, size))
     })
 }
