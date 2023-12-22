@@ -17,4 +17,7 @@ class Day21Bench {
 
     @Benchmark
     fun part1() = Day21(input).part1()
+
+    @Benchmark
+    fun part2() = Day21(input).part2()
 }
