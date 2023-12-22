@@ -60,7 +60,7 @@ kotlin {
                 implementation(libs.kotlin.wrappers.node)
 
                 // Benchmark generation failure without these
-                implementation("io.github.turansky.seskar:seskar-core:2.18.0")
+                implementation("io.github.turansky.seskar:seskar-core:2.21.2")
                 implementation("io.github.turansky.seskar:seskar-react:2.18.0")
             }
         }
