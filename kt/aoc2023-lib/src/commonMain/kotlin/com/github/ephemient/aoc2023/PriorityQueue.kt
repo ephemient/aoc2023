@@ -1,6 +1,6 @@
 package com.github.ephemient.aoc2023
 
-interface PriorityQueue<E : Any> {
+interface PriorityQueue<E : Any> : Iterable<E> {
     fun isEmpty(): Boolean
 
     fun add(element: E): Boolean

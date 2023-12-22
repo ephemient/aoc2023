@@ -28,17 +28,18 @@ internal class CommonPriorityQueue<E : Any>(private val comparator: Comparator<i
         if (storage.isNotEmpty()) {
             storage[0] = last
             var i = 0
-            while (2 * i + 1 < storage.lastIndex) {
-                val j = if (2 * i + 2 < storage.lastIndex) {
-                    if (comparator.compare(storage[2 * i + 1], storage[2 * i + 2]) < 0) 2 * i + 1 else 2 * i + 2
-                } else {
-                    2 * i + 1
-                }
+            while (2 * i + 2 < storage.size) {
+                val j = if (comparator.compare(storage[2 * i + 1], storage[2 * i + 2]) < 0) 2 * i + 1 else 2 * i + 2
                 if (comparator.compare(storage[i], storage[j]) <= 0) break
                 storage[i] = storage[j].also { storage[j] = storage[i] }
                 i = j
             }
+            if (2 * i + 1 == storage.lastIndex && comparator.compare(storage[i], storage.last()) > 0) {
+                storage[i] = storage.last().also { storage[storage.lastIndex] = storage[i] }
+            }
         }
         return first
     }
+
+    override fun iterator(): Iterator<E> = storage.iterator()
 }
