@@ -1,5 +1,9 @@
 package com.github.ephemient.aoc2023
 
+import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.fold
+import kotlinx.coroutines.launch
+
 class Day22(input: String) {
     private val size: Int
     private val rdeps: Map<Int, Set<Int>>
@@ -54,16 +58,22 @@ class Day22(input: String) {
 
     fun part1(): Int = size - deps.mapNotNullTo(mutableSetOf()) { it.value.singleOrNull() }.size
 
-    fun part2(): Int = rdeps.map { entry ->
-        val deps = deps.mapValuesTo(mutableMapOf()) { it.value.toMutableSet() }
-        DeepRecursiveFunction<Pair<Int, Iterable<Int>>, Int> { (below, aboves) ->
-            aboves.sumOf { above ->
-                val belows = deps[above] ?: return@sumOf 0
-                belows.remove(below)
-                if (belows.isNotEmpty()) return@sumOf 0
-                deps.remove(above)
-                1 + callRecursive(above to rdeps[above].orEmpty())
+    suspend fun part2(): Int = channelFlow {
+        for (entry in rdeps) {
+            launch {
+                val deps = deps.mapValuesTo(mutableMapOf()) { it.value.toMutableSet() }
+                send(
+                    DeepRecursiveFunction<Pair<Int, Iterable<Int>>, Int> { (below, aboves) ->
+                        aboves.sumOf { above ->
+                            val belows = deps[above] ?: return@sumOf 0
+                            belows.remove(below)
+                            if (belows.isNotEmpty()) return@sumOf 0
+                            deps.remove(above)
+                            1 + callRecursive(above to rdeps[above].orEmpty())
+                        }
+                    }(entry.toPair())
+                )
             }
-        }(entry.toPair())
-    }.sum()
+        }
+    }.fold(0, Int::plus)
 }
