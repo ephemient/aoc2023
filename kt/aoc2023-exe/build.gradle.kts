@@ -60,6 +60,7 @@ kotlin {
                 implementation(libs.kotlin.wrappers.node)
 
                 // Benchmark generation failure without these
+                implementation("org.jetbrains.kotlin:kotlinx-atomicfu-runtime:${this@kotlin.coreLibrariesVersion}")
                 implementation("io.github.turansky.seskar:seskar-core:2.21.2")
                 implementation("io.github.turansky.seskar:seskar-react:2.21.2")
             }

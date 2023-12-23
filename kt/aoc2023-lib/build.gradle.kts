@@ -4,6 +4,11 @@ plugins {
     id("com.github.ephemient.aoc2023.kotlin.multiplatform.jvm.platform")
     id("com.github.ephemient.aoc2023.kotlin.multiplatform.native.platforms")
     id("com.github.ephemient.aoc2023.kotlin.multiplatform.js.platform")
+    alias(libs.plugins.kotlinx.atomicfu)
+}
+
+atomicfu {
+    jvmVariant = "VH"
 }
 
 kotlin {
@@ -15,6 +20,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
+                implementation(libs.kotlinx.atomicfu)
                 implementation(libs.kotlinx.coroutines)
             }
         }

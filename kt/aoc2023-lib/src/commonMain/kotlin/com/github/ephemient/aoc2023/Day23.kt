@@ -1,7 +1,9 @@
 package com.github.ephemient.aoc2023
 
-import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.fold
+import kotlinx.atomicfu.atomic
+import kotlinx.atomicfu.update
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 class Day23(private val input: String) {
@@ -19,19 +21,49 @@ class Day23(private val input: String) {
         }
     }
 
-    suspend fun part1(): Int = solve(true)
+    suspend fun part1(): Int = Solver(src, dst, mkGraph(true))()
 
-    suspend fun part2(): Int = solve(false)
+    suspend fun part2(): Int = Solver(src, dst, mkGraph(false))()
 
-    private suspend fun solve(directed: Boolean) = channelFlow {
-        val gr = mkGraph(directed)
-        suspend fun go(src: IntPair, used: Set<IntPair>, distance: Int) {
-            if (src == dst) return send(distance)
+    private class Solver(
+        private val src: IntPair,
+        private val dst: IntPair,
+        private val gr: Map<IntPair, Map<IntPair, Int>>,
+    ) {
+        private val best = atomic(0)
+
+        @Suppress("CyclomaticComplexMethod", "ReturnCount")
+        fun CoroutineScope.go(src: IntPair, used: Set<IntPair>, distance: Int) {
+            val best = best.value
+            if (src == dst) {
+                if (distance > best) this@Solver.best.update { maxOf(it, distance) }
+                return
+            }
+
+            val stack = mutableListOf(src)
+            val visited = used.toMutableSet().apply { add(src) }
+            var potential = distance
+            while (true) {
+                val node = stack.removeLastOrNull() ?: break
+                for ((next, weight) in gr[node] ?: continue) {
+                    if (next !in used) potential += weight
+                    if (!visited.add(next)) continue
+                    stack.add(next)
+                }
+            }
+            if (potential < best || dst !in visited) return
+
             val used2 = used + src
-            for ((next, weight) in gr[src] ?: return) if (next !in used) launch { go(next, used2, distance + weight) }
+            for ((next, weight) in gr[src] ?: return) {
+                if (next !in used) launch { go(next, used2, distance + weight) }
+            }
         }
-        go(src, emptySet(), 0)
-    }.fold(0, ::maxOf)
+
+        suspend operator fun invoke(): Int {
+            coroutineScope { go(src, emptySet(), 0) }
+            return best.value
+        }
+    }
 
     @Suppress("CyclomaticComplexMethod")
     private fun mkGraph(directed: Boolean): Map<IntPair, Map<IntPair, Int>> =
