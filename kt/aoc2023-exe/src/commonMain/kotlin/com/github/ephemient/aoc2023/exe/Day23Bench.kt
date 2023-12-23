@@ -20,4 +20,10 @@ class Day23Bench {
     fun part1() = runSuspend {
         Day23(input).part1()
     }
+
+    @Suppress("EXPOSED_FUNCTION_RETURN_TYPE")
+    @Benchmark
+    fun part2() = runSuspend {
+        Day23(input).part2()
+    }
 }

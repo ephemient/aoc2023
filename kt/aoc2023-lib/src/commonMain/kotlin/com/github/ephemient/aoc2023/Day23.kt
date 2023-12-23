@@ -19,47 +19,62 @@ class Day23(private val input: String) {
         }
     }
 
-    suspend fun part1(): Int = solve(input)
+    suspend fun part1(): Int = solve(false)
 
-    suspend fun part2(): Int = solve(input.replace(slopes, "."))
+    suspend fun part2(): Int = solve(true)
 
-    private suspend fun solve(input: String) = channelFlow {
-        val gr = mkGraph(input)
-        suspend fun go(src: IntPair, used: Set<IntPair>) {
-            if (src == dst) return send(used.size)
+    private suspend fun solve(simplify: Boolean) = channelFlow {
+        val gr = mkGraph(simplify)
+        suspend fun go(src: IntPair, used: Set<IntPair>, distance: Int) {
+            if (src == dst) return send(distance)
             val used2 = used + src
-            for (next in gr[src] ?: return) if (next !in used) launch { go(next, used2) }
+            for ((next, weight) in gr[src] ?: return) if (next !in used) launch { go(next, used2, distance + weight) }
         }
-        go(src, emptySet())
+        go(src, emptySet(), 0)
     }.fold(0, ::maxOf)
 
-    companion object {
-        private val slopes = """[<>^v]""".toRegex()
-
-        private fun mkGraph(input: String): Map<IntPair, List<IntPair>> = buildMap {
-            val lines = input.lines()
-            for ((y, line) in lines.withIndex()) {
-                for ((x, char) in line.withIndex()) {
-                    this[IntPair(y, x)] = when (char) {
-                        '.' -> buildList {
-                            if (lines.getOrNull(y - 1)?.getOrNull(x)?.let(".<^>"::contains) == true) {
-                                add(IntPair(y - 1, x))
-                            }
-                            if (lines.getOrNull(y + 1)?.getOrNull(x)?.let(".<v>"::contains) == true) {
-                                add(IntPair(y + 1, x))
-                            }
-                            if (line.getOrNull(x - 1)?.let(".^<v"::contains) == true) add(IntPair(y, x - 1))
-                            if (line.getOrNull(x + 1)?.let(".^>v"::contains) == true) add(IntPair(y, x + 1))
+    @Suppress("CyclomaticComplexMethod")
+    private fun mkGraph(simplify: Boolean): Map<IntPair, Map<IntPair, Int>> = buildMap<_, MutableMap<IntPair, Int>> {
+        val lines = if (simplify) { input.replace(slopes, ".") } else { input }.lines()
+        for ((y, line) in lines.withIndex()) {
+            for ((x, char) in line.withIndex()) {
+                this[IntPair(y, x)] = when (char) {
+                    '.' -> mutableMapOf<IntPair, Int>().apply {
+                        if (lines.getOrNull(y - 1)?.getOrNull(x)?.let(".<^>"::contains) == true) {
+                            this[IntPair(y - 1, x)] = 1
                         }
-
-                        '^' -> listOf(IntPair(y - 1, x))
-                        'v' -> listOf(IntPair(y + 1, x))
-                        '<' -> listOf(IntPair(y, x - 1))
-                        '>' -> listOf(IntPair(y, x + 1))
-                        else -> continue
+                        if (lines.getOrNull(y + 1)?.getOrNull(x)?.let(".<v>"::contains) == true) {
+                            this[IntPair(y + 1, x)] = 1
+                        }
+                        if (line.getOrNull(x - 1)?.let(".^<v"::contains) == true) this[IntPair(y, x - 1)] = 1
+                        if (line.getOrNull(x + 1)?.let(".^>v"::contains) == true) this[IntPair(y, x + 1)] = 1
                     }
+
+                    '^' -> mutableMapOf(IntPair(y - 1, x) to 1)
+                    'v' -> mutableMapOf(IntPair(y + 1, x) to 1)
+                    '<' -> mutableMapOf(IntPair(y, x - 1) to 1)
+                    '>' -> mutableMapOf(IntPair(y, x + 1) to 1)
+                    else -> continue
                 }
             }
         }
+
+        if (simplify) {
+            entries.removeAll { (key, value) ->
+                if (value.size != 2) return@removeAll false
+                val iterator = value.iterator()
+                val (key1, value1) = iterator.next()
+                val (key2, value2) = iterator.next()
+                val map1 = getValue(key1)
+                map1.remove(key)?.also { map1[key2] = it + value2 }
+                val map2 = getValue(key2)
+                map2.remove(key)?.also { map2[key1] = it + value1 }
+                true
+            }
+        }
+    }
+
+    companion object {
+        private val slopes = """[<>^v]""".toRegex()
     }
 }
