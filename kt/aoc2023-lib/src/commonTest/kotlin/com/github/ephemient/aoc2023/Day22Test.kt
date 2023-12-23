@@ -1,8 +1,8 @@
 package com.github.ephemient.aoc2023
 
+import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlinx.coroutines.test.runTest
 
 class Day22Test {
     @Test
