@@ -19,12 +19,12 @@ class Day23(private val input: String) {
         }
     }
 
-    suspend fun part1(): Int = solve(false)
+    suspend fun part1(): Int = solve(true)
 
-    suspend fun part2(): Int = solve(true)
+    suspend fun part2(): Int = solve(false)
 
-    private suspend fun solve(simplify: Boolean) = channelFlow {
-        val gr = mkGraph(simplify)
+    private suspend fun solve(directed: Boolean) = channelFlow {
+        val gr = mkGraph(directed)
         suspend fun go(src: IntPair, used: Set<IntPair>, distance: Int) {
             if (src == dst) return send(distance)
             val used2 = used + src
@@ -34,44 +34,53 @@ class Day23(private val input: String) {
     }.fold(0, ::maxOf)
 
     @Suppress("CyclomaticComplexMethod")
-    private fun mkGraph(simplify: Boolean): Map<IntPair, Map<IntPair, Int>> = buildMap<_, MutableMap<IntPair, Int>> {
-        val lines = if (simplify) { input.replace(slopes, ".") } else { input }.lines()
-        for ((y, line) in lines.withIndex()) {
-            for ((x, char) in line.withIndex()) {
-                this[IntPair(y, x)] = when (char) {
-                    '.' -> mutableMapOf<IntPair, Int>().apply {
-                        if (lines.getOrNull(y - 1)?.getOrNull(x)?.let(".<^>"::contains) == true) {
-                            this[IntPair(y - 1, x)] = 1
-                        }
-                        if (lines.getOrNull(y + 1)?.getOrNull(x)?.let(".<v>"::contains) == true) {
-                            this[IntPair(y + 1, x)] = 1
-                        }
-                        if (line.getOrNull(x - 1)?.let(".^<v"::contains) == true) this[IntPair(y, x - 1)] = 1
-                        if (line.getOrNull(x + 1)?.let(".^>v"::contains) == true) this[IntPair(y, x + 1)] = 1
-                    }
-
-                    '^' -> mutableMapOf(IntPair(y - 1, x) to 1)
-                    'v' -> mutableMapOf(IntPair(y + 1, x) to 1)
-                    '<' -> mutableMapOf(IntPair(y, x - 1) to 1)
-                    '>' -> mutableMapOf(IntPair(y, x + 1) to 1)
-                    else -> continue
+    private fun mkGraph(directed: Boolean): Map<IntPair, Map<IntPair, Int>> =
+        buildMap<IntPair, MutableMap<IntPair, Edge>> {
+            val lines = if (directed) { input } else { input.replace(slopes, ".") }.lines()
+            for ((y, line) in lines.withIndex()) {
+                for ((x, c) in line.withIndex()) {
+                    val l = line.getOrElse(x - 1) { '#' }
+                    val r = line.getOrElse(x + 1) { '#' }
+                    val u = lines.getOrElse(y - 1) { "" }.getOrElse(x) { '#' }
+                    val d = lines.getOrElse(y + 1) { "" }.getOrElse(x) { '#' }
+                    val edges = mutableMapOf(
+                        IntPair(y, x - 1) to Edge(1, c in ".<" && l in ".<", c in ".>" && l in ".>"),
+                        IntPair(y, x + 1) to Edge(1, c in ".>" && r in ".>", c in ".<" && r in ".<"),
+                        IntPair(y - 1, x) to Edge(1, c in ".^" && u in ".^", c in ".v" && u in ".v"),
+                        IntPair(y + 1, x) to Edge(1, c in ".v" && d in ".v", c in ".^" && d in ".^"),
+                    )
+                    edges.values.retainAll { it.forward || it.backward }
+                    if (edges.isNotEmpty()) this[IntPair(y, x)] = edges
                 }
             }
-        }
 
-        if (simplify) {
-            entries.removeAll { (key, value) ->
-                if (value.size != 2) return@removeAll false
-                val iterator = value.iterator()
-                val (key1, value1) = iterator.next()
-                val (key2, value2) = iterator.next()
-                val map1 = getValue(key1)
-                map1.remove(key)?.also { map1[key2] = it + value2 }
-                val map2 = getValue(key2)
-                map2.remove(key)?.also { map2[key1] = it + value1 }
-                true
+            while (
+                entries.removeAll { (key, value) ->
+                    when {
+                        key == src || key == dst -> false
+                        value.size == 1 -> getValue(value.keys.single()).remove(key) != null
+                        value.size == 2 -> {
+                            val iterator = value.iterator()
+                            val (key1, value1) = iterator.next()
+                            val (key2, value2) = iterator.next()
+                            val map1 = getValue(key1)
+                            map1.remove(key)?.also { map1[key2] = it + value2 }
+                            val map2 = getValue(key2)
+                            map2.remove(key)?.also { map2[key1] = it + value1 }
+                            true
+                        }
+                        else -> false
+                    }
+                }
+            ) {
+                // empty
             }
         }
+            .mapValues { buildMap { for ((key, edge) in it.value) if (edge.forward) this[key] = edge.weight } }
+
+    private data class Edge(val weight: Int, val forward: Boolean, val backward: Boolean) {
+        operator fun plus(other: Edge): Edge =
+            Edge(weight + other.weight, forward and other.forward, backward and other.backward)
     }
 
     companion object {
