@@ -23,6 +23,7 @@ import qualified Day19 (part1, part2)
 import qualified Day20 (part1, part2)
 import qualified Day21 (part1, part2)
 import qualified Day22 (solve)
+import qualified Day24 (part1)
 
 import Control.Monad (ap, when)
 import Data.Foldable (find)
@@ -75,3 +76,4 @@ main = do
     run 20 (either (fail . errorBundlePretty) $ maybe (fail "error") print) [fmap Just . Day20.part1, Day20.part2]
     run 21 print [Day21.part1 64, Day21.part2 26501365]
     run 22 (either fail $ uncurry ((>>) `on` print)) [Day22.solve]
+    run 24 (either fail print) [Day24.part1 2e14 4e14]
