@@ -2,21 +2,22 @@
 Module:         Day24
 Description:    <https://adventofcode.com/2023/day/24 Day 24: Never Tell Me The Odds>
 -}
-{-# LANGUAGE BlockArguments, NondecreasingIndentation, ScopedTypeVariables, TypeFamilies #-}
 module Day24 (part1, part2) where
 
 import Common (readEntire)
 import Control.Arrow (first)
-import Control.Monad (guard, when)
+import Control.Monad ((>=>), filterM, guard, when)
 import Data.Char (isSpace)
+import Data.Functor (($>))
 import Data.List (tails)
 import Data.Text (Text)
 import qualified Data.Text as T (dropWhile, lines, singleton, stripPrefix)
-import Data.Text.Read (Reader, decimal, signed)
+import Data.Text.Read (Reader)
+import qualified Data.Text.Read as T (decimal, signed)
 
 parseLine :: (Num a) => Reader ((a, a, a), (a, a, a))
 parseLine text = do
-    let decimal' = fmap (first fromIntegral) . signed decimal . T.dropWhile isSpace
+    let decimal' = fmap (first fromIntegral) . T.signed T.decimal . T.dropWhile isSpace
         skip token = maybe (Left $ "expected " ++ [token]) Right . T.stripPrefix (T.singleton token) . T.dropWhile isSpace
     (x, text) <- decimal' text
     (y, text) <- skip ',' text >>= decimal'
@@ -28,24 +29,17 @@ parseLine text = do
 
 part1 :: (Fractional a, Ord a) => a -> a -> Text -> Either String Int
 part1 lo hi input = do
-    points <- mapM (readEntire parseLine) $ T.lines input
-    pure . length $ do
-        ((x0, y0, _), (vx0, vy0, _)):rest <- tails points
-        ((x1, y1, _), (vx1, vy1, _)) <- rest
-        when (vx0 == 0) $ error "vx0"
-        when (vx1 == 0) $ error "vx1"
-        -- y = (vy0 / vx0) * x + (y0 - x0 * vy0 / vx0)
-        -- y = (vy1 / vx1) * x + (y1 - x1 * vy1 / vx1)
-        let m0 = vy0 / vx0
-            m1 = vy1 / vx1
-            b0 = y0 - x0 * vy0 / vx0
-            b1 = y1 - x1 * vy1 / vx1
+    let toLine ((x, y, _), (vx, vy, _)) = when (vx == 0) (Left "unimplemented") $>
+            (m, y - x * m, (/= compare vx 0) . compare x)
+          where m = vy / vx
+    lines <- mapM (readEntire parseLine >=> toLine) $ T.lines input
+    let ok ((m0, b0, ok0), (m1, b1, ok1))
+          | m0 == m1 = when (b0 == b1) (Left "unimplemented") $> False
+          | otherwise = pure $ lo <= x && x <= hi && lo <= y && y <= hi && ok0 x && ok1 x
+          where
             x = (b0 - b1) / (m1 - m0)
-            y2 = m0 * x + b0
-            y3 = m1 * x + b1
-        when (m0 == m1) . guard $ b0 == b1 && error "m"
-        guard $ lo <= x && x <= hi && lo <= y2 && y2 <= hi && lo <= y3 && y3 <= hi &&
-            signum (x - x0) == signum vx0 && signum (x - x1) == signum vx1
+            y = m0 * x + b0
+    length <$> filterM ok [(line0, line1) | line0:lines' <- tails lines, line1 <- lines']
 
 part2 :: Text -> Either String Int
 part2 input = do
