@@ -43,7 +43,8 @@ library
         Day20,
         Day21,
         Day22,
-        Day24
+        Day24,
+        Day25
 
     -- Modules included in this library but not exported.
     other-modules:
@@ -54,6 +55,7 @@ library
     build-depends:
         base ^>=4.17.2.0,
         containers ^>=0.6.7,
+        fgl ^>=5.8.2.0,
         hashable ^>=1.4.3.0,
         heap ^>=1.0.4,
         megaparsec ^>=9.6.1,
@@ -117,7 +119,8 @@ test-suite aoc2023-test
         Day20Spec,
         Day21Spec,
         Day22Spec,
-        Day24Spec
+        Day24Spec,
+        Day25Spec
     build-depends:
         aoc2023,
         base ^>=4.17.2.0,
