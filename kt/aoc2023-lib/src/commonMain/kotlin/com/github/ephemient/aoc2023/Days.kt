@@ -25,6 +25,7 @@ val days: List<Day> = listOf(
     Day(22, ::Day22, Day22::part1, Day22::part2),
     Day(23, ::Day23, Day23::part1, Day23::part2, skipByDefault = !isJvm),
     Day(24, ::Day24, Day24::part1),
+    Day(25, ::Day25, Day25::part1),
 )
 
 data class Day(
