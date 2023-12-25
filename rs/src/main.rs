@@ -199,6 +199,7 @@ fn main() -> io::Result<()> {
         println!("Day 23");
         let data = get_day_input(23)?;
         println!("{:?}", day23::part1(&data).expect("error"));
+        println!("{:?}", day23::part2(&data).expect("error"));
         println!();
     }
 
