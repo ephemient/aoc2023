@@ -45,11 +45,13 @@ class Day23(private val input: String) {
             var potential = distance
             while (true) {
                 val node = stack.removeLastOrNull() ?: break
+                var maxWeight = 0
                 for ((next, weight) in gr[node] ?: continue) {
-                    if (next !in used) potential += weight
+                    if (next !in used) maxWeight = maxOf(maxWeight, weight)
                     if (!visited.add(next)) continue
                     stack.add(next)
                 }
+                potential += maxWeight
             }
             if (potential < best || dst !in visited) return
 
