@@ -28,7 +28,8 @@ import qualified Day19 (part1, part2)
 import qualified Day20 (part1, part2)
 import qualified Day21 (part1, part2)
 import qualified Day22 (solve)
-import qualified Day24 (part1)
+import qualified Day23 (part1, part2)
+import qualified Day24 (part1, part2)
 import qualified Day25 (part1)
 import System.Environment.Blank (getEnv, setEnv, unsetEnv)
 import System.FilePath (combine)
@@ -134,8 +135,13 @@ main = defaultMain
       [ bench "part 1" $ nf (fmap fst . Day22.solve) input
       , bench "part 2" $ nf (fmap snd . Day22.solve) input
       ]
+  , env (getDayInput 23) $ \input -> bgroup "Day 23"
+      [ bench "part 1" $ nf Day23.part1 input
+      , bench "part 2" $ nf Day23.part2 input
+      ]
   , env (getDayInput 24) $ \input -> bgroup "Day 24"
       [ bench "part 1" $ nf (Day24.part1 2e14 4e14) input
+      , bench "part 2" $ nf (Day24.part2 @Integer) input
       ]
   , envWithCleanup ((,) <$> getDayInput 25 <*> setTrace "0")
         (unsetTrace . snd) $ fst >>> \input -> bgroup "Day 25"

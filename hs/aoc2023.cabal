@@ -43,6 +43,7 @@ library
         Day20,
         Day21,
         Day22,
+        Day23,
         Day24,
         Day25
 
@@ -119,6 +120,7 @@ test-suite aoc2023-test
         Day20Spec,
         Day21Spec,
         Day22Spec,
+        Day23Spec,
         Day24Spec,
         Day25Spec
     build-depends:
