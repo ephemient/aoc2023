@@ -8,19 +8,19 @@ module Day23 (part1, part2) where
 import Control.Monad.Loops (whileM_)
 import Control.Monad.State (execState, gets, modify)
 import Data.Functor (($>))
-import Data.List ((\\))
+import Data.List ((\\), foldl')
 import Data.List.NonEmpty (NonEmpty((:|)))
-import qualified Data.Map as Map ((!), (!?), delete, fromDistinctAscList, keys, insert, maxViewWithKey, minViewWithKey, null, toList, update, updateLookupWithKey)
+import qualified Data.Map as Map ((!), delete, empty, findWithDefault, foldlWithKey', fromDistinctAscList, keysSet, insert, maxViewWithKey, minViewWithKey, null, toList, update, updateLookupWithKey, withoutKeys)
 import Data.Maybe (catMaybes)
 import Data.Monoid (All(All), Sum(Sum))
 import Data.Semigroup (Max(Max), getMax)
-import qualified Data.Set as Set (empty, insert, notMember)
+import qualified Data.Set as Set (empty, insert, member, notMember)
 import Data.Text (Text)
 import qualified Data.Text as T (index, length, lines, map)
 import qualified Data.Vector as V ((!), fromList, length)
 
 part1, part2 :: Text -> Maybe Int
-part1 input = go start Set.empty 0 where
+part1 input = go start Set.empty 0 Nothing where
     grid = V.fromList $ T.lines input
     get (y, x)
       | y < 0 || y >= V.length grid = '#'
@@ -53,8 +53,10 @@ part1 input = go start Set.empty 0 where
       ]
     Just ((start, _), _) = Map.minViewWithKey gr
     Just ((end, _), _) = Map.maxViewWithKey gr
-    simplify = whileM_ (gets Map.keys >>= foldr f (pure False) . (\\ [start, end])) $ pure () where
-        f key k = gets (Map.toList . (Map.! key)) >>= \case
+    simplify = whileM_ (gets Map.keysSet >>= foldr f (pure False)) $ pure () where
+        f key k
+          | key == start || key == end = k
+          | otherwise = gets (Map.toList . (Map.! key)) >>= \case
             [] -> modify (Map.delete key) >> k $> True
             [(key', _)] -> modify (Map.delete key . Map.update (pure . Map.delete key) key') >> k $> True
             [(key1, value1), (key2, value2)] ->
@@ -74,14 +76,21 @@ part1 input = go start Set.empty 0 where
               ]
       , not $ Map.null edges'
       ]
-    go pos used distance
-      | pos == end = Just distance
-      | otherwise = getMax <$> mconcat
-          [ Max <$> go next used' (distance + weight)
-          | (next, weight) <- maybe [] Map.toList $ gr' Map.!? pos
-          , next `Set.notMember` used
-          ]
-      where used' = Set.insert pos used
+    go pos used distance best
+      | pos == end = max best $ Just distance
+      | otherwise = Map.foldlWithKey' go' best $ Map.findWithDefault Map.empty pos gr'
+      where
+        go' best dst weight
+          | dst `Set.member` used || Just potential <= best || end `Set.notMember` reachable = best
+          | otherwise = go dst (Set.insert pos used) (distance + weight) best
+        dfs (reachable, potential) pos
+          | pos `Set.member` reachable = (reachable, potential)
+          | otherwise
+          = foldl' dfs (Set.insert pos reachable, maybe potential (+ potential) weight) $ Map.keysSet next
+          where
+            next = Map.findWithDefault Map.empty pos gr' `Map.withoutKeys` used
+            weight = getMax <$> foldMap (Just . Max) next
+        (reachable, potential) = dfs (used, distance) pos
 part2 = part1 . T.map \case
     '<' -> '.'
     '>' -> '.'
