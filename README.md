@@ -28,5 +28,5 @@ Development occurs in language-specific directories:
 |[Day21.hs](hs/src/Day21.hs)|[Day21.kt](kt/aoc2023-lib/src/commonMain/kotlin/com/github/ephemient/aoc2023/Day21.kt)|[day21.py](py/aoc2023/day21.py)|[day21.rs](rs/src/day21.rs)|
 |[Day22.hs](hs/src/Day22.hs)|[Day22.kt](kt/aoc2023-lib/src/commonMain/kotlin/com/github/ephemient/aoc2023/Day22.kt)|[day22.py](py/aoc2023/day22.py)|[day22.rs](rs/src/day22.rs)|
 |[Day23.hs](hs/src/Day23.hs)|[Day23.kt](kt/aoc2023-lib/src/commonMain/kotlin/com/github/ephemient/aoc2023/Day23.kt)||[day23.rs](rs/src/day23.rs)|
-|[Day24.hs](hs/src/Day24.hs)|[Day24.kt](kt/aoc2023-lib/src/commonMain/kotlin/com/github/ephemient/aoc2023/Day24.kt) ½|[day24.py](py/aoc2023/day24.py)|[day24.rs](rs/src/day24.rs) ½|
+|[Day24.hs](hs/src/Day24.hs)|[Day24.kt](kt/aoc2023-lib/src/commonMain/kotlin/com/github/ephemient/aoc2023/Day24.kt)|[day24.py](py/aoc2023/day24.py)|[day24.rs](rs/src/day24.rs) ½|
 |[Day25.hs](hs/src/Day25.hs)|[Day25.kt](kt/aoc2023-lib/src/commonMain/kotlin/com/github/ephemient/aoc2023/Day25.kt)|[day25.py](py/aoc2023/day25.py)|[day25.rs](rs/src/day25.rs)|

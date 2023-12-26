@@ -1,6 +1,5 @@
 package com.github.ephemient.aoc2023
 
-import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -11,7 +10,6 @@ class Day24Test {
     }
 
     @Test
-    @Ignore
     fun part2() {
         assertEquals(47, Day24(example).part2())
     }
