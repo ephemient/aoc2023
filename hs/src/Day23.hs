@@ -2,15 +2,18 @@
 Module:         Day23
 Description:    <https://adventofcode.com/2023/day/23 Day 23: A Long Walk>
 -}
-{-# LANGUAGE BlockArguments, LambdaCase #-}
+{-# LANGUAGE BlockArguments, LambdaCase, MultiWayIf #-}
 module Day23 (part1, part2) where
 
-import Control.Monad.Loops (whileM_)
-import Control.Monad.State (execState, gets, modify)
+import Control.Concurrent (forkIO, getNumCapabilities)
+import Control.Concurrent.STM (atomically, modifyTVar', newTQueueIO, newTVarIO, readTQueue, readTVarIO, writeTQueue)
+import Control.Exception (bracket)
+import Control.Monad (when, replicateM_)
+import Control.Monad.Loops (whileJust_, whileM_)
+import Control.Monad.State (execState, gets, modify, foldM_)
 import Data.Functor (($>))
 import Data.List ((\\), foldl')
-import Data.List.NonEmpty (NonEmpty((:|)))
-import qualified Data.Map as Map ((!), delete, empty, findWithDefault, foldlWithKey', fromDistinctAscList, keysSet, insert, maxViewWithKey, minViewWithKey, null, toList, update, updateLookupWithKey, withoutKeys)
+import qualified Data.Map as Map ((!), delete, empty, findWithDefault, foldlWithKey', fromDistinctAscList, keysSet, insert, maxViewWithKey, minViewWithKey, null, size, toList, update, updateLookupWithKey, withoutKeys)
 import Data.Maybe (catMaybes)
 import Data.Monoid (All(All), Sum(Sum))
 import Data.Semigroup (Max(Max), getMax)
@@ -19,8 +22,42 @@ import Data.Text (Text)
 import qualified Data.Text as T (index, length, lines, map)
 import qualified Data.Vector as V ((!), fromList, length)
 
-part1, part2 :: Text -> Maybe Int
-part1 input = go start Set.empty 0 Nothing where
+part1, part2 :: Text -> IO (Maybe Int)
+part1 input = do
+    best <- newTVarIO Nothing
+    queue <- newTQueueIO
+    pending <- newTQueueIO
+    let go (pos, used, distance) = do
+            best' <- readTVarIO best
+            if
+              | pos == end ->
+                when (Just distance > best') . atomically . modifyTVar' best . max $ Just distance
+              | Just potential > best', end `Set.member` reachable -> do
+                let next = Map.findWithDefault Map.empty pos gr' `Map.withoutKeys` used
+                atomically . writeTQueue pending $ Map.size next
+                Map.foldlWithKey' go' (pure ()) $ Map.findWithDefault Map.empty pos gr' `Map.withoutKeys` used
+              | otherwise -> pure ()
+            atomically $ writeTQueue pending (-1)
+          where
+            go' k dst weight = k >> atomically
+                (writeTQueue queue $ Just (dst, Set.insert pos used, distance + weight))
+            dfs (reachable, potential) pos
+              | pos `Set.member` reachable = (reachable, potential)
+              | otherwise
+              = foldl' dfs (Set.insert pos reachable, maybe potential (+ potential) weight) $ Map.keysSet next
+              where
+                next = Map.findWithDefault Map.empty pos gr' `Map.withoutKeys` used
+                weight = getMax <$> foldMap (Just . Max) next
+            (reachable, potential) = dfs (used, distance) pos
+        work = whileJust_ (atomically $ readTQueue queue) go
+        wait 0 = pure ()
+        wait n = atomically (readTQueue pending) >>= wait . (n +)
+    bracket getNumCapabilities (flip replicateM_ . atomically $ writeTQueue queue Nothing) $ \n -> do
+        replicateM_ n $ forkIO work
+        atomically . writeTQueue queue $ Just (start, Set.empty, 0)
+        wait 1
+    readTVarIO best
+  where
     grid = V.fromList $ T.lines input
     get (y, x)
       | y < 0 || y >= V.length grid = '#'
@@ -76,21 +113,6 @@ part1 input = go start Set.empty 0 Nothing where
               ]
       , not $ Map.null edges'
       ]
-    go pos used distance best
-      | pos == end = max best $ Just distance
-      | otherwise = Map.foldlWithKey' go' best $ Map.findWithDefault Map.empty pos gr'
-      where
-        go' best dst weight
-          | dst `Set.member` used || Just potential <= best || end `Set.notMember` reachable = best
-          | otherwise = go dst (Set.insert pos used) (distance + weight) best
-        dfs (reachable, potential) pos
-          | pos `Set.member` reachable = (reachable, potential)
-          | otherwise
-          = foldl' dfs (Set.insert pos reachable, maybe potential (+ potential) weight) $ Map.keysSet next
-          where
-            next = Map.findWithDefault Map.empty pos gr' `Map.withoutKeys` used
-            weight = getMax <$> foldMap (Just . Max) next
-        (reachable, potential) = dfs (used, distance) pos
 part2 = part1 . T.map \case
     '<' -> '.'
     '>' -> '.'

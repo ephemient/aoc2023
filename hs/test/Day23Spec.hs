@@ -4,7 +4,7 @@ module Day23Spec (spec) where
 import Data.Text (Text)
 import qualified Data.Text as T (unlines)
 import Day23 (part1, part2)
-import Test.Hspec (Spec, describe, it, shouldBe, it)
+import Test.Hspec (Spec, describe, it, shouldReturn, it)
 
 example :: Text
 example = T.unlines
@@ -37,7 +37,7 @@ spec :: Spec
 spec = do
     describe "part 1" $ do
         it "examples" $ do
-            part1 example `shouldBe` Just 94
+            part1 example `shouldReturn` Just 94
     describe "part 2" $ do
         it "examples" $ do
-            part2 example `shouldBe` Just 154
+            part2 example `shouldReturn` Just 154

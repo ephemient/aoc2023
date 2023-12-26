@@ -1,7 +1,7 @@
 module Main (main) where
 
 import Control.Arrow ((>>>))
-import Criterion.Main (bench, bgroup, defaultMain, env, envWithCleanup, nf)
+import Criterion.Main (bench, bgroup, defaultMain, env, envWithCleanup, nf, nfIO)
 import Data.Foldable (find)
 import Data.Maybe (fromMaybe)
 import Data.Text (Text)
@@ -136,8 +136,8 @@ main = defaultMain
       , bench "part 2" $ nf (fmap snd . Day22.solve) input
       ]
   , env (getDayInput 23) $ \input -> bgroup "Day 23"
-      [ bench "part 1" $ nf Day23.part1 input
-      , bench "part 2" $ nf Day23.part2 input
+      [ bench "part 1" $ nfIO $ Day23.part1 input
+      , bench "part 2" $ nfIO $ Day23.part2 input
       ]
   , env (getDayInput 24) $ \input -> bgroup "Day 24"
       [ bench "part 1" $ nf (Day24.part1 2e14 4e14) input

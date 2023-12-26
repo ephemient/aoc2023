@@ -78,6 +78,6 @@ main = do
     run 20 (either (fail . errorBundlePretty) $ maybe (fail "error") print) [fmap Just . Day20.part1, Day20.part2]
     run 21 print [Day21.part1 64, Day21.part2 26501365]
     run 22 (either fail $ uncurry ((>>) `on` print)) [Day22.solve]
-    run 23 (maybe (fail "error") print) [Day23.part1, Day23.part2]
+    run 23 (>>= maybe (fail "error") print) [Day23.part1, Day23.part2]
     run 24 (either fail putStrLn) [fmap show . Day24.part1 2e14 4e14, fmap show . Day24.part2]
     run 25 (maybe (fail "error") print) [Day25.part1]

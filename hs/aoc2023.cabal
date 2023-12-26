@@ -64,6 +64,7 @@ library
         mtl ^>=2.2.2,
         parallel ^>=3.2.2.0,
         split ^>=0.2.4,
+        stm ^>= 2.5.3.0,
         text ^>=2.0.1,
         unordered-containers ^>=0.2.19.1,
         vector ^>=0.13.1.0
