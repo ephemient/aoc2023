@@ -206,7 +206,14 @@ fn main() -> io::Result<()> {
     if args.is_empty() || args.contains("24") {
         println!("Day 24");
         let data = get_day_input(24)?;
-        println!("{:?}", day24::part1(&data).expect("error"));
+        println!(
+            "{:?}",
+            day24::part1(&data).map_err(|e| io::Error::new(io::ErrorKind::Other, Box::new(e)))?
+        );
+        println!(
+            "{:?}",
+            day24::part2(&data).map_err(|e| io::Error::new(io::ErrorKind::Other, Box::new(e)))?
+        );
         println!();
     }
 

@@ -5,7 +5,7 @@ fn solve<const N: usize>(line: &str) -> Option<usize> {
     let (lhs, rhs) = line.split_once(' ')?;
     let rhs = rhs
         .split(',')
-        .map(|x| x.parse().ok())
+        .map(|x| x.parse::<usize>().ok())
         .collect::<Option<Vec<_>>>()?;
     let string = Itertools::intersperse([&lhs; N].into_iter(), &"?")
         .flat_map(|s| s.chars())

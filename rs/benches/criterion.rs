@@ -158,6 +158,7 @@ fn aoc2023_bench(c: &mut Criterion) -> io::Result<()> {
     let data = get_day_input(24)?;
     let mut g = c.benchmark_group("day 24");
     g.bench_function("part 1", |b| b.iter(|| day24::part1(black_box(&data))));
+    g.bench_function("part 2", |b| b.iter(|| day24::part2(black_box(&data))));
     g.finish();
 
     let data = get_day_input(25)?;
