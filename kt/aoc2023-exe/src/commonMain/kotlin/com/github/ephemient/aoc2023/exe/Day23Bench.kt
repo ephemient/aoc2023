@@ -15,15 +15,9 @@ class Day23Bench {
         input = getDayInput(23)
     }
 
-    @Suppress("EXPOSED_FUNCTION_RETURN_TYPE")
     @Benchmark
-    fun part1() = runSuspend {
-        Day23(input).part1()
-    }
+    fun part1() = Day23(input).part1()
 
-    @Suppress("EXPOSED_FUNCTION_RETURN_TYPE")
     @Benchmark
-    fun part2() = runSuspend {
-        Day23(input).part2()
-    }
+    fun part2() = Day23(input).part2()
 }

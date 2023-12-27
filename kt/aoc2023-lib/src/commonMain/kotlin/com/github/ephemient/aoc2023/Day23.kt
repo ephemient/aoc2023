@@ -1,11 +1,5 @@
 package com.github.ephemient.aoc2023
 
-import kotlinx.atomicfu.atomic
-import kotlinx.atomicfu.update
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
-
 class Day23(private val input: String) {
     private val src: IntPair
     private val dst: IntPair
@@ -21,50 +15,48 @@ class Day23(private val input: String) {
         }
     }
 
-    suspend fun part1(): Int = Solver(src, dst, mkGraph(true))()
+    fun part1(): Int = solve(mkGraph(true))
 
-    suspend fun part2(): Int = Solver(src, dst, mkGraph(false))()
+    fun part2(): Int = solve(mkGraph(false))
 
-    private class Solver(
-        private val src: IntPair,
-        private val dst: IntPair,
-        private val gr: Map<IntPair, Map<IntPair, Int>>,
-    ) {
-        private val best = atomic(0)
+    private fun solve(gr: Map<IntPair, Map<IntPair, Int>>): Int = solve(gr, src, setOf(src), 0, 0)
 
-        @Suppress("CyclomaticComplexMethod", "ReturnCount")
-        fun CoroutineScope.go(src: IntPair, used: Set<IntPair>, distance: Int) {
-            val best = best.value
-            if (src == dst) {
-                if (distance > best) this@Solver.best.update { maxOf(it, distance) }
-                return
-            }
-
-            val stack = mutableListOf(src)
-            val visited = used.toMutableSet().apply { add(src) }
-            var potential = distance
-            while (true) {
-                val node = stack.removeLastOrNull() ?: break
-                var maxWeight = 0
-                for ((next, weight) in gr[node] ?: continue) {
-                    if (next !in used) maxWeight = maxOf(maxWeight, weight)
-                    if (!visited.add(next)) continue
-                    stack.add(next)
-                }
-                potential += maxWeight
-            }
-            if (potential < best || dst !in visited) return
-
-            val used2 = used + src
-            for ((next, weight) in gr[src] ?: return) {
-                if (next !in used) launch { go(next, used2, distance + weight) }
+    private fun solve(
+        gr: Map<IntPair, Map<IntPair, Int>>,
+        pos: IntPair,
+        used: Set<IntPair>,
+        distance: Int,
+        best: Int,
+    ): Int = if (pos == dst) {
+        maxOf(distance, best)
+    } else {
+        val reachable = mutableSetOf<IntPair>()
+        val potential = distance + scan(gr, pos, used, reachable)
+        if (potential <= best || dst !in reachable) {
+            best
+        } else {
+            gr[pos].orEmpty().entries.sortedByDescending { it.value }.fold(best) { acc, (next, weight) ->
+                if (next in used) acc else solve(gr, next, used + next, distance + weight, acc)
             }
         }
+    }
 
-        suspend operator fun invoke(): Int {
-            coroutineScope { go(src, emptySet(), 0) }
-            return best.value
-        }
+    private fun scan(
+        gr: Map<IntPair, Map<IntPair, Int>>,
+        pos: IntPair,
+        used: Set<IntPair>,
+        reachable: MutableSet<IntPair>,
+    ): Int {
+        val next = gr[pos] ?: return 0
+        var greatest = 0
+        return next.entries.sumOf { (next, weight) ->
+            if (next in used) {
+                0
+            } else {
+                greatest = maxOf(greatest, weight)
+                if (reachable.add(next)) scan(gr, next, used, reachable) else 0
+            }
+        } + greatest
     }
 
     @Suppress("CyclomaticComplexMethod")

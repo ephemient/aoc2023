@@ -4,7 +4,6 @@ detekt = "1.23.4"
 graal-sdk = "23.1.1"
 junit-jupiter = "5.10.1"
 kotlin = "1.9.22"
-kotlinx-atomicfu = "0.23.1"
 kotlinx-benchmark = "0.4.10"
 kotlinx-coroutines = "1.8.0-RC2"
 kotlinx-html = "0.10.1"
@@ -14,7 +13,6 @@ native-image-plugin = "0.9.28"
 [plugins]
 dependency-updates = { id = "com.github.ben-manes.versions", version.ref = "dependency-updates" }
 kotlin-plugin-allopen = { id = "org.jetbrains.kotlin.plugin.allopen", version.ref = "kotlin" }
-kotlinx-atomicfu = { id = "kotlinx-atomicfu", version.ref = "kotlinx-atomicfu" }
 kotlinx-benchmark = { id = "org.jetbrains.kotlinx.benchmark", version.ref = "kotlinx-benchmark" }
 native-image = { id = "org.graalvm.buildtools.native", version.ref = "native-image-plugin" }
 
@@ -26,7 +24,6 @@ junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.re
 junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit-jupiter" }
 kotlin-wrappers-browser = { module = "org.jetbrains.kotlin-wrappers:kotlin-browser", version = "1.0.0-pre.673" }
 kotlin-wrappers-node = { module = "org.jetbrains.kotlin-wrappers:kotlin-node", version = "18.16.12-pre.673" }
-kotlinx-atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "kotlinx-atomicfu" }
 kotlinx-benchmark = { module = "org.jetbrains.kotlinx:kotlinx-benchmark-runtime", version.ref = "kotlinx-benchmark" }
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
