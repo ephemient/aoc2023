@@ -32,9 +32,26 @@ jobs:
           name: jmh-visualizer
           path: jmh-visualizer.zip
 
-  build:
-    needs: [ get-inputs ]
+  assemble:
     runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: gradle/gradle-build-action@v2
+        with:
+          arguments: assembleBenchmarks
+          build-root-directory: kt
+
+  build:
+    needs: [ assemble, get-inputs ]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target: [ jvm, js, linuxX64 ]
 
     steps:
       - uses: actions/checkout@v4
@@ -48,17 +65,14 @@ jobs:
           java-version: 17
       - uses: gradle/gradle-build-action@v2
         with:
-          arguments: assembleBenchmarks
+          arguments: ${{ matrix.target }}Benchmark
           build-root-directory: kt
-      - uses: gradle/gradle-build-action@v2
-        with:
-          arguments: --max-workers 1 benchmark
-          build-root-directory: kt
+          cache-read-only: true
         env:
           AOC2023_DATADIR: ${{ github.workspace }}/inputs
       - uses: actions/upload-artifact@v3
         with:
-          name: benchmarks
+          name: ${{ matrix.target }}-benchmarks
           path: kt/aoc2023-exe/build/reports/benchmarks
 
   docs:
@@ -74,7 +88,15 @@ jobs:
           name: jmh-visualizer
       - uses: actions/download-artifact@v3
         with:
-          name: benchmarks
+          name: jvm-benchmarks
+          path: benchmarks
+      - uses: actions/download-artifact@v3
+        with:
+          name: js-benchmarks
+          path: benchmarks
+      - uses: actions/download-artifact@v3
+        with:
+          name: linuxX64-benchmarks
           path: benchmarks
       - run: rm -rf jmh-visualizer
       - run: unzip -d jmh-visualizer jmh-visualizer.zip
