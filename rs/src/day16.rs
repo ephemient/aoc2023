@@ -12,21 +12,21 @@ enum Direction {
 }
 
 #[dynamic]
-static LUT: BTreeMap<(Direction, char), &'static [Direction]> = {
+static LUT: BTreeMap<(Direction, u8), &'static [Direction]> = {
     static DIRECTIONS: [Direction; 4] = [Direction::U, Direction::D, Direction::L, Direction::R];
     [
-        ((Direction::U, '/'), &DIRECTIONS[3..4]),
-        ((Direction::U, '\\'), &DIRECTIONS[2..3]),
-        ((Direction::U, '-'), &DIRECTIONS[2..4]),
-        ((Direction::L, '/'), &DIRECTIONS[1..2]),
-        ((Direction::L, '\\'), &DIRECTIONS[0..1]),
-        ((Direction::L, '|'), &DIRECTIONS[0..2]),
-        ((Direction::D, '/'), &DIRECTIONS[2..3]),
-        ((Direction::D, '\\'), &DIRECTIONS[3..4]),
-        ((Direction::D, '-'), &DIRECTIONS[2..4]),
-        ((Direction::R, '/'), &DIRECTIONS[0..1]),
-        ((Direction::R, '\\'), &DIRECTIONS[1..2]),
-        ((Direction::R, '|'), &DIRECTIONS[0..2]),
+        ((Direction::U, b'/'), &DIRECTIONS[3..4]),
+        ((Direction::U, b'\\'), &DIRECTIONS[2..3]),
+        ((Direction::U, b'-'), &DIRECTIONS[2..4]),
+        ((Direction::L, b'/'), &DIRECTIONS[1..2]),
+        ((Direction::L, b'\\'), &DIRECTIONS[0..1]),
+        ((Direction::L, b'|'), &DIRECTIONS[0..2]),
+        ((Direction::D, b'/'), &DIRECTIONS[2..3]),
+        ((Direction::D, b'\\'), &DIRECTIONS[3..4]),
+        ((Direction::D, b'-'), &DIRECTIONS[2..4]),
+        ((Direction::R, b'/'), &DIRECTIONS[0..1]),
+        ((Direction::R, b'\\'), &DIRECTIONS[1..2]),
+        ((Direction::R, b'|'), &DIRECTIONS[0..2]),
     ]
     .into()
 };
@@ -40,14 +40,11 @@ fn step(y: usize, x: usize, dir: Direction) -> Option<(usize, usize)> {
     })
 }
 
-fn fill(data: &[&str], y: usize, x: usize, d: Direction) -> Option<usize> {
+fn fill(data: &[&[u8]], y: usize, x: usize, d: Direction) -> Option<usize> {
     let mut stack = vec![(y, x, d)];
     let mut visited = stack.iter().copied().collect::<BTreeSet<_>>();
     while let Some((y, x, d)) = stack.pop() {
-        for &d in *LUT
-            .get(&(d, data[y][x..].chars().next()?))
-            .unwrap_or(&&[d][..])
-        {
+        for &d in *LUT.get(&(d, data[y][x])).unwrap_or(&&[d][..]) {
             let Some((y, x)) = step(y, x, d) else {
                 continue;
             };
@@ -66,11 +63,16 @@ fn fill(data: &[&str], y: usize, x: usize, d: Direction) -> Option<usize> {
 }
 
 pub fn part1(data: &str) -> Option<usize> {
-    fill(&data.lines().collect::<Vec<_>>(), 0, 0, Direction::R)
+    fill(
+        &data.lines().map(|line| line.as_bytes()).collect::<Vec<_>>(),
+        0,
+        0,
+        Direction::R,
+    )
 }
 
 pub fn part2(data: &str) -> Option<usize> {
-    let data = data.lines().collect::<Vec<_>>();
+    let data = data.lines().map(|line| line.as_bytes()).collect::<Vec<_>>();
     (0..data.len())
         .map(|y| (y, 0, Direction::R))
         .chain((0..data.first()?.len()).map(|x| (0, x, Direction::D)))

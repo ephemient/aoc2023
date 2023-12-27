@@ -4,19 +4,14 @@ fn find_reflection<T: Eq, F: Fn(&[T], &[T]) -> bool>(data: &[T], eq: F) -> usize
         .unwrap_or_default()
 }
 
-fn solve<F: Fn(&[&str], &[&str]) -> bool>(lines: &[&str], eq: F) -> usize {
+fn solve<F: Fn(&[&[u8]], &[&[u8]]) -> bool>(lines: &[&[u8]], eq: F) -> usize {
     let width = lines
         .iter()
         .map(|line| line.len())
         .max()
         .unwrap_or_default();
     let transpose = (0..width)
-        .map(|i| {
-            lines
-                .iter()
-                .flat_map(|line| line[i..i + 1].chars())
-                .collect::<String>()
-        })
+        .map(|i| lines.iter().map(|line| line[i]).collect::<Vec<_>>())
         .collect::<Vec<_>>();
     let transpose = transpose.iter().map(|line| &line[..]).collect::<Vec<_>>();
 
@@ -26,9 +21,13 @@ fn solve<F: Fn(&[&str], &[&str]) -> bool>(lines: &[&str], eq: F) -> usize {
 pub fn part1(data: &str) -> usize {
     data.split("\n\n")
         .map(|group| {
-            solve(&group.lines().collect::<Vec<_>>(), |x, y| {
-                x.iter().rev().zip(y.iter()).all(|(a, b)| a == b)
-            })
+            solve(
+                &group
+                    .lines()
+                    .map(|line| line.as_bytes())
+                    .collect::<Vec<_>>(),
+                |x, y| x.iter().rev().zip(y.iter()).all(|(a, b)| a == b),
+            )
         })
         .sum()
 }
@@ -36,14 +35,20 @@ pub fn part1(data: &str) -> usize {
 pub fn part2(data: &str) -> usize {
     data.split("\n\n")
         .map(|group| {
-            solve(&group.lines().collect::<Vec<_>>(), |x, y| {
-                let mut iter = x
-                    .iter()
-                    .rev()
-                    .zip(y.iter())
-                    .flat_map(|(a, b)| a.chars().zip(b.chars()).filter(|(c, d)| c != d));
-                iter.next().is_some() && iter.next().is_none()
-            })
+            solve(
+                &group
+                    .lines()
+                    .map(|line| line.as_bytes())
+                    .collect::<Vec<_>>(),
+                |x, y| {
+                    let mut iter = x
+                        .iter()
+                        .rev()
+                        .zip(y.iter())
+                        .flat_map(|(a, b)| a.iter().zip(b.iter()).filter(|(c, d)| c != d));
+                    iter.next().is_some() && iter.next().is_none()
+                },
+            )
         })
         .sum()
 }

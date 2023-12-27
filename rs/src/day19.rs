@@ -3,32 +3,33 @@ use std::collections::HashMap;
 
 type Comparison = (char, Ordering, u32);
 type Rule<'a> = Vec<(&'a str, Option<Comparison>)>;
+type Point<T> = (T, T, T, T);
 
-#[derive(Clone, Debug)]
-struct Point<T> {
-    x: T,
-    m: T,
-    a: T,
-    s: T,
+trait Index {
+    type Item;
+    fn get(&self, key: char) -> Option<&Self::Item>;
+    fn get_mut(&mut self, key: char) -> Option<&mut Self::Item>;
 }
 
-impl<T> Point<T> {
-    fn get(&self, key: char) -> Option<&T> {
+impl<T> Index for Point<T> {
+    type Item = T;
+
+    fn get(&self, key: char) -> Option<&Self::Item> {
         match key {
-            'x' => Some(&self.x),
-            'm' => Some(&self.m),
-            'a' => Some(&self.a),
-            's' => Some(&self.s),
+            'x' => Some(&self.0),
+            'm' => Some(&self.1),
+            'a' => Some(&self.2),
+            's' => Some(&self.3),
             _ => None,
         }
     }
 
-    fn get_mut(&mut self, key: char) -> Option<&mut T> {
+    fn get_mut(&mut self, key: char) -> Option<&mut Self::Item> {
         match key {
-            'x' => Some(&mut self.x),
-            'm' => Some(&mut self.m),
-            'a' => Some(&mut self.a),
-            's' => Some(&mut self.s),
+            'x' => Some(&mut self.0),
+            'm' => Some(&mut self.1),
+            'a' => Some(&mut self.2),
+            's' => Some(&mut self.3),
             _ => None,
         }
     }
@@ -79,12 +80,7 @@ fn parse_point(line: &str) -> Option<Point<u32>> {
             return None;
         }
     }
-    Some(Point {
-        x: x?,
-        m: m?,
-        a: a?,
-        s: s?,
-    })
+    Some((x?, m?, a?, s?))
 }
 
 pub fn part1(data: &str) -> u32 {
@@ -110,7 +106,7 @@ pub fn part1(data: &str) -> u32 {
                     .0;
             }
             if name == "A" {
-                Some(point.x + point.m + point.a + point.s)
+                Some(point.0 + point.1 + point.2 + point.3)
             } else {
                 None
             }
@@ -119,51 +115,42 @@ pub fn part1(data: &str) -> u32 {
 }
 
 fn part2_helper(rules: &HashMap<&str, Rule>, name: &str, bounds: Point<(u32, u32)>) -> u64 {
-    let Point {
-        x: (x0, x1),
-        m: (m0, m1),
-        a: (a0, a1),
-        s: (s0, s1),
-    } = bounds;
+    let ((x0, x1), (m0, m1), (a0, a1), (s0, s1)) = bounds;
     if x0 > x1 || m0 > m1 || a0 > a1 || s0 > s1 {
         return 0;
     }
     if name == "A" {
-        return (x1 - x0 + 1) as u64
-            * (m1 - m0 + 1) as u64
-            * (a1 - a0 + 1) as u64
-            * (s1 - s0 + 1) as u64;
+        return u64::from(x1 - x0 + 1)
+            * u64::from(m1 - m0 + 1)
+            * u64::from(a1 - a0 + 1)
+            * u64::from(s1 - s0 + 1);
     }
     let Some(rule) = rules.get(name) else {
         return 0;
     };
     rule.iter()
-        .scan(
-            Some(bounds.clone()),
-            |st, &(name, comparison)| -> Option<u64> {
-                let Some((key, ordering, value)) = comparison else {
-                    return Some(part2_helper(rules, name, st.take()?));
-                };
-                let mut bounds = st.clone()?;
-                let Some(((lo0, hi0), (lo1, hi1))) =
-                    bounds.get_mut(key).zip(st.as_mut()?.get_mut(key))
-                else {
-                    return Some(0);
-                };
-                if ordering < Ordering::Greater {
-                    *hi0 = min(*hi0, value - 1);
-                    *lo1 = max(*lo1, value);
-                }
-                if ordering > Ordering::Less {
-                    *lo0 = max(*lo0, value + 1);
-                    *hi1 = min(*hi1, value);
-                }
-                if lo1 > hi1 {
-                    *st = None;
-                }
-                Some(part2_helper(rules, name, bounds))
-            },
-        )
+        .scan(Some(bounds), |st, &(name, comparison)| -> Option<u64> {
+            let Some((key, ordering, value)) = comparison else {
+                return Some(part2_helper(rules, name, st.take()?));
+            };
+            let mut bounds = (*st)?;
+            let Some(((lo0, hi0), (lo1, hi1))) = bounds.get_mut(key).zip(st.as_mut()?.get_mut(key))
+            else {
+                return Some(0);
+            };
+            if ordering < Ordering::Greater {
+                *hi0 = min(*hi0, value - 1);
+                *lo1 = max(*lo1, value);
+            }
+            if ordering > Ordering::Less {
+                *lo0 = max(*lo0, value + 1);
+                *hi1 = min(*hi1, value);
+            }
+            if lo1 > hi1 {
+                *st = None;
+            }
+            Some(part2_helper(rules, name, bounds))
+        })
         .sum()
 }
 
@@ -175,12 +162,7 @@ pub fn part2(data: &str) -> u64 {
             .map_while(parse_rule)
             .collect::<HashMap<_, _>>(),
         "in",
-        Point {
-            x: (1, 4000),
-            m: (1, 4000),
-            a: (1, 4000),
-            s: (1, 4000),
-        },
+        ((1, 4000), (1, 4000), (1, 4000), (1, 4000)),
     )
 }
 

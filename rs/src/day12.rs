@@ -8,7 +8,8 @@ fn solve<const N: usize>(line: &str) -> Option<usize> {
         .map(|x| x.parse::<usize>().ok())
         .collect::<Option<Vec<_>>>()?;
     let string = Itertools::intersperse([&lhs; N].into_iter(), &"?")
-        .flat_map(|s| s.chars())
+        .flat_map(|s| s.as_bytes())
+        .copied()
         .collect::<Vec<_>>();
     let runs = [&rhs; N].into_iter().flatten().copied().collect::<Vec<_>>();
     let last_run = runs.last()?;
@@ -16,9 +17,9 @@ fn solve<const N: usize>(line: &str) -> Option<usize> {
         (0..string.len())
             .map(|i| {
                 if i + last_run > string.len()
-                    || i != 0 && string[i - 1] == '#'
-                    || string[i..i + last_run].iter().any(|&c| c == '.')
-                    || string[i + last_run..].iter().any(|&c| c == '#')
+                    || i != 0 && string[i - 1] == b'#'
+                    || string[i..i + last_run].iter().any(|&c| c == b'.')
+                    || string[i + last_run..].iter().any(|&c| c == b'#')
                 {
                     0
                 } else {
@@ -30,9 +31,9 @@ fn solve<const N: usize>(line: &str) -> Option<usize> {
             (0..string.len())
                 .map(|i| {
                     if i + run >= string.len()
-                        || i != 0 && string[i - 1] == '#'
-                        || string[i..i + run].iter().any(|&c| c == '.')
-                        || string[i + run] == '#'
+                        || i != 0 && string[i - 1] == b'#'
+                        || string[i..i + run].iter().any(|&c| c == b'.')
+                        || string[i + run] == b'#'
                     {
                         0
                     } else {
@@ -41,8 +42,8 @@ fn solve<const N: usize>(line: &str) -> Option<usize> {
                             .zip(
                                 string[i + run + 1..]
                                     .iter()
-                                    .take_while(|&&c| c != '#')
-                                    .chain([&'#']),
+                                    .take_while(|&&c| c != b'#')
+                                    .chain([&b'#']),
                             )
                             .map(|(&count, _)| count)
                             .sum()
@@ -54,7 +55,7 @@ fn solve<const N: usize>(line: &str) -> Option<usize> {
     Some(
         counts
             .into_iter()
-            .zip(string.into_iter().take_while(|&c| c != '#').chain(['#']))
+            .zip(string.into_iter().take_while(|&c| c != b'#').chain([b'#']))
             .map(|(count, _)| count)
             .sum(),
     )

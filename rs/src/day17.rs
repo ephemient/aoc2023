@@ -42,7 +42,7 @@ where
     P: Fn(usize) -> bool,
     F: Fn(Direction, usize) -> T,
     T: IntoIterator,
-    <T as IntoIterator>::Item: Into<Direction>,
+    T::Item: Into<Direction>,
 {
     let maze = data
         .lines()

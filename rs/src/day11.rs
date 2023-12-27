@@ -1,26 +1,22 @@
 fn solve(data: &str, n: usize) -> usize {
-    let lines = data.lines().collect::<Vec<_>>();
+    let mut counts = Vec::<usize>::new();
     solve1(
-        &lines
-            .iter()
-            .map(|line| line.chars().filter(|&c| c == '#').count())
-            .collect::<Vec<_>>(),
-        n,
-    ) + solve1(
-        &(0..lines
-            .iter()
-            .map(|line| line.len())
-            .max()
-            .unwrap_or_default())
-            .map(|x| {
-                lines
-                    .iter()
-                    .filter(|line| line[x..].starts_with('#'))
-                    .count()
+        &data
+            .lines()
+            .map(|line| {
+                let mut count = 0;
+                counts.extend(std::iter::repeat(0).take(line.len()).skip(counts.len()));
+                for (i, c) in line.char_indices() {
+                    if c == '#' {
+                        counts[i] += 1;
+                        count += 1;
+                    }
+                }
+                count
             })
             .collect::<Vec<_>>(),
         n,
-    )
+    ) + solve1(&counts, n)
 }
 
 fn solve1(data: &[usize], n: usize) -> usize {

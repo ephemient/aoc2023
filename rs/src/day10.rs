@@ -11,19 +11,19 @@ enum Direction {
 }
 
 #[dynamic]
-static LUT: BTreeMap<(Direction, char), Direction> = [
-    ((Direction::U, '|'), Direction::U),
-    ((Direction::U, '7'), Direction::L),
-    ((Direction::U, 'F'), Direction::R),
-    ((Direction::L, '-'), Direction::L),
-    ((Direction::L, 'F'), Direction::D),
-    ((Direction::L, 'L'), Direction::U),
-    ((Direction::D, '|'), Direction::D),
-    ((Direction::D, 'L'), Direction::R),
-    ((Direction::D, 'J'), Direction::L),
-    ((Direction::R, '-'), Direction::R),
-    ((Direction::R, 'J'), Direction::U),
-    ((Direction::R, '7'), Direction::D),
+static LUT: BTreeMap<(Direction, u8), Direction> = [
+    ((Direction::U, b'|'), Direction::U),
+    ((Direction::U, b'7'), Direction::L),
+    ((Direction::U, b'F'), Direction::R),
+    ((Direction::L, b'-'), Direction::L),
+    ((Direction::L, b'F'), Direction::D),
+    ((Direction::L, b'L'), Direction::U),
+    ((Direction::D, b'|'), Direction::D),
+    ((Direction::D, b'L'), Direction::R),
+    ((Direction::D, b'J'), Direction::L),
+    ((Direction::R, b'-'), Direction::R),
+    ((Direction::R, b'J'), Direction::U),
+    ((Direction::R, b'7'), Direction::D),
 ]
 .into();
 
@@ -36,10 +36,10 @@ fn step((y, x): (usize, usize), dir: Direction) -> Option<(usize, usize)> {
     })
 }
 
-fn part1_helper(maze: &[&str]) -> Option<Vec<(usize, usize)>> {
+fn part1_helper(maze: &[&[u8]]) -> Option<Vec<(usize, usize)>> {
     for (y, line) in maze.iter().enumerate() {
-        for (x, char) in line.char_indices() {
-            if char != 'S' {
+        for (x, char) in line.iter().enumerate() {
+            if *char != b'S' {
                 continue;
             }
             let start_pos = (y, x);
@@ -47,8 +47,7 @@ fn part1_helper(maze: &[&str]) -> Option<Vec<(usize, usize)>> {
                 let mut pos = start_pos;
                 let mut path = iter::from_fn(|| {
                     pos = step(pos, dir)?;
-                    dir =
-                        *LUT.get(&(dir, maze[pos.0..].iter().next()?[pos.1..].chars().next()?))?;
+                    dir = *LUT.get(&(dir, maze[pos.0][pos.1]))?;
                     Some(pos)
                 })
                 .collect::<Vec<_>>();
@@ -63,11 +62,11 @@ fn part1_helper(maze: &[&str]) -> Option<Vec<(usize, usize)>> {
 }
 
 pub fn part1(data: &str) -> Option<usize> {
-    Some(part1_helper(&data.lines().collect::<Vec<_>>())?.len() / 2)
+    Some(part1_helper(&data.lines().map(|line| line.as_bytes()).collect::<Vec<_>>())?.len() / 2)
 }
 
 pub fn part2(data: &str) -> Option<usize> {
-    let path = part1_helper(&data.lines().collect::<Vec<_>>())?;
+    let path = part1_helper(&data.lines().map(|line| line.as_bytes()).collect::<Vec<_>>())?;
     let (n, m) = path
         .iter()
         .zip(path[1..].iter().chain(path.iter()))
