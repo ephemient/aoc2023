@@ -17,12 +17,13 @@ class Day25(input: String) {
             val components = mutableListOf<Int>()
             val keys = graph.keys.toMutableSet()
             while (true) {
-                val start = keys.firstOrNull() ?: break
-                keys.remove(start)
+                val iterator = keys.iterator()
+                if (!iterator.hasNext()) break
+                val start = iterator.next().also { iterator.remove() }
                 var m = 0
-                DeepRecursiveFunction {
+                DeepRecursiveFunction { key ->
                     m++
-                    graph[it]?.filter(keys::remove)?.forEach { callRecursive(it) }
+                    graph[key]?.forEach { if (keys.remove(it)) callRecursive(it) }
                 }(start)
                 components.add(m)
             }

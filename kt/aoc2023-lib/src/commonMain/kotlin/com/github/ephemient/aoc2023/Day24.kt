@@ -35,11 +35,13 @@ class Day24(input: String) {
         }
     }
 
-    @Suppress("DestructuringDeclarationWithTooManyEntries")
-    fun part2(): Long? = hailstones.asSequence().withIndex().flatMap { (i, hailstone0) ->
-        val (x0, y0, z0, vx0, vy0, vz0) = hailstone0
+    @Suppress("CyclomaticComplexMethod", "DestructuringDeclarationWithTooManyEntries", "LongMethod", "NestedBlockDepth")
+    fun part2(): Long {
+        while (true) {
+            val hailstone0 = hailstones.random()
+            val (x0, y0, z0, vx0, vy0, vz0) = hailstone0
 
-        hailstones.asSequence().take(i).withIndex().flatMap { (j, hailstone1) ->
+            val hailstone1 = hailstones.random()
             val x1 = hailstone1.x - x0
             val y1 = hailstone1.y - y0
             val z1 = hailstone1.z - z0
@@ -51,38 +53,62 @@ class Day24(input: String) {
             val py1 = z1 * vx1.toDouble() - x1 * vz1.toDouble()
             val pz1 = x1 * vy1.toDouble() - y1 * vx1.toDouble()
 
-            hailstones.asSequence().take(j).flatMap { hailstone2 ->
-                val x2 = hailstone2.x - x0
-                val y2 = hailstone2.y - y0
-                val z2 = hailstone2.z - z0
-                val vx2 = hailstone2.vx - vx0
-                val vy2 = hailstone2.vy - vy0
-                val vz2 = hailstone2.vz - vz0
+            val hailstone2 = hailstones.random()
+            val x2 = hailstone2.x - x0
+            val y2 = hailstone2.y - y0
+            val z2 = hailstone2.z - z0
+            val vx2 = hailstone2.vx - vx0
+            val vy2 = hailstone2.vy - vy0
+            val vz2 = hailstone2.vz - vz0
 
-                val px2 = y2 * vz2.toDouble() - z2 * vy2.toDouble()
-                val py2 = z2 * vx2.toDouble() - x2 * vz2.toDouble()
-                val pz2 = x2 * vy2.toDouble() - y2 * vx2.toDouble()
+            val px2 = y2 * vz2.toDouble() - z2 * vy2.toDouble()
+            val py2 = z2 * vx2.toDouble() - x2 * vz2.toDouble()
+            val pz2 = x2 * vy2.toDouble() - y2 * vx2.toDouble()
 
-                val mx = py1 * pz2 - pz1 * py2
-                val my = pz1 * px2 - px1 * pz2
-                val mz = px1 * py2 - py1 * px2
+            val mx = py1 * pz2 - pz1 * py2
+            val my = pz1 * px2 - px1 * pz2
+            val mz = px1 * py2 - py1 * px2
 
-                val u1 = (y1 * vx1 - x1 * vy1) / (my * vx1 - mx * vy1)
-                val u2 = (y2 * vx2 - x2 * vy2) / (my * vx2 - mx * vy2)
+            val u1 = (y1 * vx1 - x1 * vy1) / (my * vx1 - mx * vy1)
+            val u2 = (y2 * vx2 - x2 * vy2) / (my * vx2 - mx * vy2)
 
-                listOf((mx * u1 - x1) / vx1, (my * u1 - y1) / vy1, (mz * u1 - z1) / vz1).flatMap { t1 ->
-                    listOf((mx * u2 - x2) / vx2, (my * u2 - y2) / vy2, (mz * u2 - z2) / vz2).map { t2 ->
-                        (x0 + y0 + z0 + (mx + my + mz) * (u1 * t2 - u2 * t1) / (t2 - t1))
+            val t1s = doubleArrayOf((mx * u1 - x1) / vx1, (my * u1 - y1) / vy1, (mz * u1 - z1) / vz1)
+            val t2s = doubleArrayOf((mx * u2 - x2) / vx2, (my * u2 - y2) / vy2, (mz * u2 - z2) / vz2)
+
+            for (t1 in t1s) {
+                @Suppress("LoopWithTooManyJumpStatements")
+                for (t2 in t2s) {
+                    val scale = (u1 * t2 - u2 * t1) / (t2 - t1)
+                    val x = ((x0 + mx * scale).takeIf { !it.isNaN() } ?: continue).roundToLong()
+                    val y = ((y0 + my * scale).takeIf { !it.isNaN() } ?: continue).roundToLong()
+                    val z = ((z0 + mz * scale).takeIf { !it.isNaN() } ?: continue).roundToLong()
+                    val vxs = doubleArrayOf((x0 + x1 - x) / t1 + vx0 + vx1, (x0 + x2 - x) / t2 + vx0 + vx2)
+                    val vys = doubleArrayOf((y0 + y1 - y) / t1 + vy0 + vy1, (y0 + y2 - y) / t2 + vy0 + vy2)
+                    val vzs = doubleArrayOf((z0 + z1 - z) / t1 + vz0 + vz1, (z0 + z2 - z) / t2 + vz0 + vz2)
+                    @Suppress("NAME_SHADOWING")
+                    for (vx in vxs) {
+                        val vx = (vx.takeIf { !it.isNaN() } ?: continue).roundToLong()
+                        for (vy in vys) {
+                            val vy = (vy.takeIf { !it.isNaN() } ?: continue).roundToLong()
+                            for (vz in vzs) {
+                                val vz = (vz.takeIf { !it.isNaN() } ?: continue).roundToLong()
+                                println("$x, $y, $x @ $vx, $vy, $vz")
+                                if (
+                                    hailstones.all {
+                                        (it.x - x) * (it.vy - vy) == (it.y - y) * (it.vx - vx) &&
+                                            (it.x - x) * (it.vz - vz) == (it.z - z) * (it.vx - vx) &&
+                                            (it.y - y) * (it.vz - vz) == (it.z - z) * (it.vy - vy)
+                                    }
+                                ) {
+                                    return x + y + z
+                                }
+                            }
+                        }
                     }
                 }
             }
         }
     }
-        .mapNotNull { if (it.isFinite()) it.roundToLong() else null }
-        .groupingBy { it }
-        .eachCount()
-        .maxByOrNull { it.value }
-        ?.key
 
     private data class Hailstone(val x: Long, val y: Long, val z: Long, val vx: Long, val vy: Long, val vz: Long)
 
