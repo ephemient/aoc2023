@@ -1,7 +1,7 @@
 [versions]
 dependency-updates = "0.50.0"
 detekt = "1.23.4"
-graal-sdk = "23.1.1"
+graal-sdk = "23.1.2"
 junit-jupiter = "5.10.1"
 kotlin = "1.9.22"
 kotlinx-benchmark = "0.4.10"
