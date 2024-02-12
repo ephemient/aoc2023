@@ -22,7 +22,7 @@ detekt-plugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", v
 graal-sdk = { module = "org.graalvm.sdk:graal-sdk", version.ref = "graal-sdk" }
 junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit-jupiter" }
 junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit-jupiter" }
-kotlin-wrappers-browser = { module = "org.jetbrains.kotlin-wrappers:kotlin-browser", version = "1.0.0-pre.673" }
+kotlin-wrappers-browser = { module = "org.jetbrains.kotlin-wrappers:kotlin-browser", version = "1.0.0-pre.696" }
 kotlin-wrappers-node = { module = "org.jetbrains.kotlin-wrappers:kotlin-node", version = "18.16.12-pre.673" }
 kotlinx-benchmark = { module = "org.jetbrains.kotlinx:kotlinx-benchmark-runtime", version.ref = "kotlinx-benchmark" }
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
