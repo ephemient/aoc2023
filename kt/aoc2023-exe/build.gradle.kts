@@ -62,7 +62,7 @@ kotlin {
                 // Benchmark generation failure without these
                 implementation("org.jetbrains.kotlin:kotlinx-atomicfu-runtime:${this@kotlin.coreLibrariesVersion}")
                 implementation("io.github.turansky.seskar:seskar-core:2.22.0")
-                implementation("io.github.turansky.seskar:seskar-react:2.22.0")
+                implementation("io.github.turansky.seskar:seskar-react:2.40.0")
             }
         }
     }
